@@ -6,7 +6,7 @@
 \alias{fuzz_dbl}
 \alias{fuzz_fctr}
 \alias{fuzz_int}
-\alias{fuzz_log}
+\alias{fuzz_lgl}
 \title{Fuzz test inputs}
 \usage{
 fuzz_all()
@@ -17,7 +17,7 @@ fuzz_int()
 
 fuzz_dbl()
 
-fuzz_log()
+fuzz_lgl()
 
 fuzz_fctr()
 }
@@ -32,7 +32,7 @@ Fuzz test inputs
 
 \item \code{fuzz_dbl}: Double vectors
 
-\item \code{fuzz_log}: Logical vectors
+\item \code{fuzz_lgl}: Logical vectors
 
 \item \code{fuzz_fctr}: Factor vectors
 }}

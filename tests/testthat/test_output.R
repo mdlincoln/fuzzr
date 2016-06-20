@@ -21,7 +21,14 @@ test_that("Multi-class returns can be handled appropriately", {
     return(r)
   }
 
-  target_class <- "a; b; c"
+  fmf <- fuzz_function(mf, "x")
+  fmf_c <- summary(fmf, class_format = "concat")
+  fmf_n <- summary(fmf, class_format = "nest")
 
-  expect_equivalent(head(summary(fuzz_function(mf, "x"))$type, n = 1L), target_class)
+  expect_error(summary(fmf, class_format = "invalid"))
+  expect_equivalent(fmf_c$fuzz_input, fmf_n$fuzz_input)
+  expect_true(is.character(fmf_c$fuzz_input))
+  expect_true(is.character(fmf_n$fuzz_input))
+  expect_true(is.character(fmf_c$class))
+  expect_true(is.list(fmf_n$class))
 })

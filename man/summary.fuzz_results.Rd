@@ -4,19 +4,27 @@
 \alias{summary.fuzz_results}
 \title{Summarize fuzz test results as a data frame}
 \usage{
-\method{summary}{fuzz_results}(fuzz_results)
+\method{summary}{fuzz_results}(fuzz_results, class_format = c("concat",
+  "nest"))
 }
 \arguments{
 \item{fuzz_results}{object returned by \code{\link{fuzz_function}}.}
+
+\item{class_format}{How to format function return classes. \code{"concat"} (the
+default) collapses multiple class names into one comma-delimited character
+scalar, which can be easier to read on the console. \code{"nest"} creates a
+nested data frame, saving object classes in a list column using
+\code{\link[tidyr]{nest}}.}
 }
 \value{
 A data frame with the following columns: \describe{
-\item{\code{fuzz_input}}{The name of the fuzz test performed.}
-\item{\code{type}}{The type of response. If a condition was returned, one of
-   \code{message}, \code{warning}, or \code{error}; if a value was returned,
-   the \code{\link{class}} of that value.}
-\item{\code{message}}{The condition message, if applicable.}
-}
+  \item{\code{fuzz_input}}{The name of the fuzz test performed.}
+  \item{\code{class}}{The class of response. If a condition was returned, one
+  of \code{message}, \code{warning}, or \code{error}; if a value was
+  returned, the \code{\link{class}} of that value.}
+  \item{\code{message}}{The
+  condition message, if applicable.}
+  }
 }
 \description{
 Summarize fuzz test results as a data frame
