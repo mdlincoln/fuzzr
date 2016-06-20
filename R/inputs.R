@@ -3,7 +3,7 @@
 #' Fuzz test inputs
 #' @export
 fuzz_all <- function() {
-  c(fuzz_char(), fuzz_int(), fuzz_dbl(), fuzz_fctr(), fuzz_log())
+  c(fuzz_char(), fuzz_int(), fuzz_dbl(), fuzz_fctr(), fuzz_lgl())
 }
 
 #' @describeIn fuzz_all Character vectors
@@ -40,11 +40,11 @@ fuzz_dbl <- function() {
 
 #' @describeIn fuzz_all Logical vectors
 #' @export
-fuzz_log <- function() {
+fuzz_lgl <- function() {
   list(
-    log_single = TRUE,
-    log_mutliple = c(TRUE, FALSE, FALSE),
-    log_with_na = c(TRUE, NA, FALSE)
+    lgl_single = TRUE,
+    lgl_mutliple = c(TRUE, FALSE, FALSE),
+    lgl_with_na = c(TRUE, NA, FALSE)
   )
 }
 
