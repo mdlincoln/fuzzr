@@ -1,5 +1,7 @@
 # fuzzr
 
+[![Project Status: Concept - Minimal or no implementation has been done yet.](http://www.repostatus.org/badges/latest/concept.svg)](http://www.repostatus.org/#concept)
+
 fuzzr implements some simpel ["fuzz tests"]() for your R functions, passing in a wide array of inputs and returning a report (normally as a data.frame) on how your function reacts.
 
 ## Installation
