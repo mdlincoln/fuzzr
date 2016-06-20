@@ -21,7 +21,7 @@ fuzz_function <- function(fun, arg_name, ..., tests = fuzz_all()) {
 
   fuzz_results <- fuzz_fun_arg(fun = fun, arg = arg_name, .dots = .dots, tests = tests)
 
-  fuzz_as_data_frame(fuzz_results)
+  compose_results(fuzz_results)
 }
 
 # Internal functions ----
