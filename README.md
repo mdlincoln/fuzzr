@@ -12,13 +12,13 @@ devtools::install_github("mdlincoln/fuzzr")
 
 ## Usage
 
-Evaluate a function argument, or arguments, by passing argument names along with the tests to run to `fuzz_function`:
+Evaluate a function argument by supplying it's quoted name along with the tests to run to `fuzz_function`, along with any other required static values:
 
 ``` r
-fuzz_function(fun = lm, arg_names = c("subset", "method"), tests = fuzz_all())
+fuzz_function(fun = lm, arg_name = "subset", data = iris, formula = Sepal.Lengh ~ Petal.Width + Petal.Length, tests = fuzz_all())
 ```
 
-`fuzz_function` returns a dataframe of results indicating whether a condition (message, warning, or error) was created by your function, along with the value returned by that function.
+`fuzz_function` returns a data frame of results indicating whether a condition (message, warning, or error) was created by your function, along with the value returned by that function.
 
 ### Tests
 
