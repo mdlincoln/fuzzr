@@ -17,15 +17,11 @@ parse_fuzz_result <- function(fuzz_result) {
     data.frame(
       type = pretty_type(class(fuzz_result)),
       message = fuzz_result$message,
-      call = NA,
-      return = NA,
     stringsAsFactors = FALSE)
   } else {
     data.frame(
       type = class(fuzz_result),
       message = NA,
-      call = NA,
-      return = NA,
     stringsAsFactors = FALSE)
   }
 }
