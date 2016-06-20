@@ -30,17 +30,6 @@ value_returned <- function(fuzz_results, index) {
   getElement(fuzz_results, index)
 }
 
-#' Is the object of class fuzz_results?
-#'
-#' @param x
-#'
-#' @return Logical value
-#'
-#' @export
-is.fuzz_results <- function(x) {
-  inherits(x, "fuzz_results")
-}
-
 # Internal functions ----
 
 
