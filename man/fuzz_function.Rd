@@ -9,11 +9,11 @@ fuzz_function(fun, arg_name, ..., tests = fuzz_all())
 \arguments{
 \item{fun}{A function}
 
+\item{arg_name}{Quoted name of the argument to fuzz test}
+
 \item{...}{Static values to pass to fun}
 
 \item{tests}{Which fuzz tests to run. Accepts a named list of inputs, defaulting to \code{\link{fuzz_all}}.}
-
-\item{arg_names}{Quoted name of the argument to fuzz test}
 }
 \value{
 A data frame of fuzz test results.

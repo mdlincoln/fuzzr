@@ -3,7 +3,7 @@
 #' Fuzz-test a function
 #'
 #' @param fun A function
-#' @param arg_names Quoted name of the argument to fuzz test
+#' @param arg_name Quoted name of the argument to fuzz test
 #' @param ... Static values to pass to fun
 #' @param tests Which fuzz tests to run. Accepts a named list of inputs, defaulting to \code{\link{fuzz_all}}.
 #'
@@ -31,7 +31,7 @@ fuzz_function <- function(fun, arg_name, ..., tests = fuzz_all()) {
 # (and/or conditions) named after the fuzz test.
 fuzz_fun_arg <- function(fun, arg, .dots, tests = fuzz_all()) {
   purrr::map(tests, function(x) {
-    fun_arg <- setNames(list(x), arg)
+    fun_arg <- stats::setNames(list(x), arg)
     try_fuzz(do.call(fun, args = c(fun_arg, .dots)))
   })
 }
