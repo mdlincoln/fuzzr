@@ -20,7 +20,7 @@ fuzzr implements some simple ["fuzz tests"](https://en.wikipedia.org/wiki/Fuzz_t
 
 ## Installation
 
-``` r
+```{r, eval = FALSE}
 devtools::install_github("mdlincoln/fuzzr")
 ```
 

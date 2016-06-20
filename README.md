@@ -22,26 +22,28 @@ Evaluate a function argument by supplying it's quoted name along with the tests 
 ``` r
 library(fuzzr)
 fuzz_function(fun = lm, arg_name = "subset", data = iris, formula = Sepal.Length ~ Petal.Width + Petal.Length, tests = fuzz_all())
-#> Source: local data frame [16 x 3]
+#> Source: local data frame [18 x 3]
 #> 
 #>             fuzz_input  type          message
 #>                  (chr) (chr)            (chr)
 #> 1          char_single error 0 (non-NA) cases
-#> 2        char_multiple error 0 (non-NA) cases
-#> 3         char_with_na error 0 (non-NA) cases
-#> 4           int_single    lm               NA
-#> 5         int_multiple    lm               NA
-#> 6          int_with_na    lm               NA
-#> 7           dbl_single error 0 (non-NA) cases
-#> 8         dbl_mutliple error 0 (non-NA) cases
-#> 9          dbl_with_na error 0 (non-NA) cases
-#> 10         fctr_single    lm               NA
-#> 11       fctr_multiple    lm               NA
-#> 12        fctr_with_na    lm               NA
-#> 13 fctr_missing_levels    lm               NA
-#> 14          log_single    lm               NA
-#> 15        log_mutliple    lm               NA
-#> 16         log_with_na    lm               NA
+#> 2    char_single_blank error 0 (non-NA) cases
+#> 3        char_multiple error 0 (non-NA) cases
+#> 4  char_multiple_blank error 0 (non-NA) cases
+#> 5         char_with_na error 0 (non-NA) cases
+#> 6           int_single    lm               NA
+#> 7         int_multiple    lm               NA
+#> 8          int_with_na    lm               NA
+#> 9           dbl_single error 0 (non-NA) cases
+#> 10        dbl_mutliple error 0 (non-NA) cases
+#> 11         dbl_with_na error 0 (non-NA) cases
+#> 12         fctr_single    lm               NA
+#> 13       fctr_multiple    lm               NA
+#> 14        fctr_with_na    lm               NA
+#> 15 fctr_missing_levels    lm               NA
+#> 16          log_single    lm               NA
+#> 17        log_mutliple    lm               NA
+#> 18         log_with_na    lm               NA
 ```
 
 ### Tests
@@ -53,8 +55,14 @@ fuzz_char()
 #> $char_single
 #> [1] "a"
 #> 
+#> $char_single_blank
+#> [1] ""
+#> 
 #> $char_multiple
 #> [1] "a" "b" "c"
+#> 
+#> $char_multiple_blank
+#> [1] "a" "b" "c" "" 
 #> 
 #> $char_with_na
 #> [1] "a" "b" NA

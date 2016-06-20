@@ -11,7 +11,9 @@ fuzz_all <- function() {
 fuzz_char <- function() {
   list(
     char_single = c("a"),
+    char_single_blank = "",
     char_multiple = c("a", "b", "c"),
+    char_multiple_blank = c("a", "b", "c", ""),
     char_with_na = c("a", "b", NA)
   )
 }
