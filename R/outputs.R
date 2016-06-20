@@ -66,7 +66,7 @@ parse_fuzz_result <- function(fuzz_result) {
     stringsAsFactors = FALSE)
   } else {
     data.frame(
-      type = class(fuzz_result),
+      type = paste0(class(fuzz_result), collapse = "; "),
       message = NA,
     stringsAsFactors = FALSE)
   }

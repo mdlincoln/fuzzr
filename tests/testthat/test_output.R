@@ -13,3 +13,15 @@ test_that("Values can be extracted from a fuzz_results object", {
   expect_s3_class(value_returned(lm_fuzz, 6), "lm")
   expect_s3_class(value_returned(lm_fuzz, "int_single"), "lm")
 })
+
+test_that("Multi-class returns can be handled appropriately", {
+  mf <- function(x) {
+    r <- x
+    class(r) <- c("a", "b", "c")
+    return(r)
+  }
+
+  target_class <- "a; b; c"
+
+  expect_equivalent(head(summary(fuzz_function(mf, "x"))$type, n = 1L), target_class)
+})
