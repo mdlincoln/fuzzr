@@ -1,14 +1,12 @@
 # Exported functions ----
 
-#' Format fuzz testing results as a data frame
-#'
-#' @export
-fuzz_as_data_frame <- function(fuzz_results) {
-  purrr::map_df(fuzz_results, parse_fuzz_result, .id = "fuzz_input")
-}
 
 # Internal functions ----
 
+# Format fuzz testing results as a data frame
+fuzz_as_data_frame <- function(fuzz_results) {
+  purrr::map_df(fuzz_results, parse_fuzz_result, .id = "fuzz_input")
+}
 # Test if object is of the class fuzz-condition
 is.condition <- function(x) inherits(x, c("fuzz-message", "fuzz-warning", "fuzz-error"))
 
