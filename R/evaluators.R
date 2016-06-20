@@ -11,13 +11,15 @@
 #'
 #' @export
 fuzz_function <- function(fun, arg_name, ..., tests = fuzz_all()) {
+  .dots = list(...)
+
   assertthat::assert_that(is.function(fun))
   assertthat::assert_that(assertthat::is.string(arg_name))
   assertthat::assert_that(is.list(tests))
   assertthat::assert_that(assertthat::has_args(fun, arg_name))
+  assertthat::assert_that(assertthat::has_args(fun, names(.dots)))
 
-
-  fuzz_results <- fuzz_fun_arg(fun = fun, arg = arg_name, .dots = list(...), tests = tests)
+  fuzz_results <- fuzz_fun_arg(fun = fun, arg = arg_name, .dots = .dots, tests = tests)
 
   fuzz_as_data_frame(fuzz_results)
 }
