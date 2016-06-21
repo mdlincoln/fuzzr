@@ -4,7 +4,7 @@ lm_fuzz <- fuzz_function(lm, "subset", data = iris, formula = Sepal.Length ~ Sep
 
 test_that("fuzz_function returns a data.frame object", {
   expect_s3_class(lm_fuzz, "fuzz_results")
-  expect_s3_class(summary(lm_fuzz), "data.frame")
+  expect_s3_class(as.data.frame(lm_fuzz), "data.frame")
 })
 
 test_that("Values can be extracted from a fuzz_results object", {
@@ -22,10 +22,10 @@ test_that("Multi-class returns can be handled appropriately", {
   }
 
   fmf <- fuzz_function(mf, "x")
-  fmf_c <- summary(fmf, class_format = "concat")
-  fmf_n <- summary(fmf, class_format = "nest")
+  fmf_c <- as.data.frame(fmf, class_format = "concat")
+  fmf_n <- as.data.frame(fmf, class_format = "nest")
 
-  expect_error(summary(fmf, class_format = "invalid"))
+  expect_error(as.data.frame(fmf, class_format = "invalid"))
   expect_equivalent(fmf_c$fuzz_input, fmf_n$fuzz_input)
   expect_true(is.character(fmf_c$fuzz_input))
   expect_true(is.character(fmf_n$fuzz_input))

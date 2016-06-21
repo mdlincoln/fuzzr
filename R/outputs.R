@@ -19,7 +19,7 @@
 #'   }
 #'
 #' @export
-summary.fuzz_results <- function(fuzz_results, class_format = c("concat", "nest")) {
+as.data.frame.fuzz_results <- function(fuzz_results, class_format = c("concat", "nest")) {
   class_format <- match.arg(class_format)
 
   summary_handler <- switch(
@@ -27,7 +27,7 @@ summary.fuzz_results <- function(fuzz_results, class_format = c("concat", "nest"
     "concat" = concat_summary,
     "nest" = nest_summary)
 
-  fdf <- attr(fuzz_results, "summary")
+  fdf <- attr(fuzz_results, "data.frame")
   summary_handler(fdf)
 }
 
@@ -52,7 +52,9 @@ concat_summary <- function(fdf) {
   g_dots <- list(~fuzz_input, ~message)
   s_dots <- list(~as.character(paste0(class, collapse = ", ")))
   summarized <- dplyr::ungroup(dplyr::summarize_(dplyr::group_by_(fdf, .dots = g_dots), .dots = stats::setNames(s_dots, "class")))
-  test_order <- summarized[match(unique_tests, summarized$fuzz_input), ]
+
+  # Return a data frame sorted in the same order in which it was input
+  summarized[match(unique_tests, summarized$fuzz_input), ]
 }
 
 # Nests multiple classes as a list column in a data frame
@@ -62,7 +64,7 @@ nest_summary <- function(fdf) {
 
 # Compose and attach a summary dataframe of results
 compose_results <- function(fuzz_results) {
-  attr(fuzz_results, "summary") <- fuzz_as_data_frame(fuzz_results)
+  attr(fuzz_results, "data.frame") <- fuzz_as_data_frame(fuzz_results)
   structure(fuzz_results, class = "fuzz_results")
 }
 
