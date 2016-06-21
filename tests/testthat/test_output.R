@@ -18,10 +18,16 @@ test_that("Multi-class returns can be handled appropriately", {
   mf <- function(x) {
     r <- x
     class(r) <- c("a", "b", "c")
+    warning("warn 1")
+    warning("warn 2")
+    message("mess 1")
+    message("mess 2")
+    if(x == 1) stop("error 1")
     return(r)
   }
 
   fmf <- fuzz_function(mf, "x")
+  fdf <- attr(fmf, "summary_results")
   fmf_c <- as.data.frame(fmf, class_format = "concat")
   fmf_n <- as.data.frame(fmf, class_format = "nest")
 
