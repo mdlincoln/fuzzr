@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 
 # fuzzr
 
-[![Project Status: Concept - Minimal or no implementation has been done yet.](http://www.repostatus.org/badges/latest/concept.svg)](http://www.repostatus.org/#concept)
+[![Project Status: WIP - Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip)
 [![Travis-CI Build Status](https://travis-ci.org/mdlincoln/fuzzr.svg?branch=master)](https://travis-ci.org/mdlincoln/fuzzr)
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/mdlincoln/fuzzr?branch=master&svg=true)](https://ci.appveyor.com/project/mdlincoln/fuzzr)
 
@@ -30,12 +30,19 @@ devtools::install_github("mdlincoln/fuzzr")
 ## Usage
 
 Evaluate a function argument by supplying it's quoted name along with the tests to run to `fuzz_function`, along with any other required static values. 
-`fuzz_function` returns a data frame of results indicating whether a condition (message, warning, or error) was created by your function, along with the value returned by that function.
-
+`fuzz_function` returns a "fuzz_results" object that stores conditions raised by a function (message, warning, or error) along with any value returned by that function.
+You can preview this list with 
 
 ```{r}
 library(fuzzr)
-fuzz_function(fun = lm, arg_name = "subset", data = iris, formula = Sepal.Length ~ Petal.Width + Petal.Length, tests = fuzz_all())
+fuzz_results <- fuzz_function(fun = lm, arg_name = "subset", data = iris, 
+                              formula = Sepal.Length ~ Petal.Width + Petal.Length, 
+                              tests = fuzz_all())
+
+as.data.frame(fuzz_results)
+
+model <- value_returned(fuzz_results, "int_multiple")
+coefficients(model)
 ```
 
 ### Tests

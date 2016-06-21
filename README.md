@@ -3,7 +3,7 @@
 fuzzr
 =====
 
-[![Project Status: Concept - Minimal or no implementation has been done yet.](http://www.repostatus.org/badges/latest/concept.svg)](http://www.repostatus.org/#concept) [![Travis-CI Build Status](https://travis-ci.org/mdlincoln/fuzzr.svg?branch=master)](https://travis-ci.org/mdlincoln/fuzzr) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/mdlincoln/fuzzr?branch=master&svg=true)](https://ci.appveyor.com/project/mdlincoln/fuzzr)
+[![Project Status: WIP - Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip) [![Travis-CI Build Status](https://travis-ci.org/mdlincoln/fuzzr.svg?branch=master)](https://travis-ci.org/mdlincoln/fuzzr) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/mdlincoln/fuzzr?branch=master&svg=true)](https://ci.appveyor.com/project/mdlincoln/fuzzr)
 
 fuzzr implements some simple ["fuzz tests"](https://en.wikipedia.org/wiki/Fuzz_testing) for your R functions, passing in a wide array of inputs and returning a report (normally as a data.frame) on how your function reacts.
 
@@ -17,33 +17,42 @@ devtools::install_github("mdlincoln/fuzzr")
 Usage
 -----
 
-Evaluate a function argument by supplying it's quoted name along with the tests to run to `fuzz_function`, along with any other required static values. `fuzz_function` returns a data frame of results indicating whether a condition (message, warning, or error) was created by your function, along with the value returned by that function.
+Evaluate a function argument by supplying it's quoted name along with the tests to run to `fuzz_function`, along with any other required static values. `fuzz_function` returns a "fuzz\_results" object that stores conditions raised by a function (message, warning, or error) along with any value returned by that function. You can preview this list with
 
 ``` r
 library(fuzzr)
-fuzz_function(fun = lm, arg_name = "subset", data = iris, formula = Sepal.Length ~ Petal.Width + Petal.Length, tests = fuzz_all())
-#> Source: local data frame [18 x 3]
+fuzz_results <- fuzz_function(fun = lm, arg_name = "subset", data = iris, 
+                              formula = Sepal.Length ~ Petal.Width + Petal.Length, 
+                              tests = fuzz_all())
+
+as.data.frame(fuzz_results)
+#> Source: local data frame [18 x 5]
 #> 
-#>             fuzz_input  type          message
-#>                  (chr) (chr)            (chr)
-#> 1          char_single error 0 (non-NA) cases
-#> 2    char_single_blank error 0 (non-NA) cases
-#> 3        char_multiple error 0 (non-NA) cases
-#> 4  char_multiple_blank error 0 (non-NA) cases
-#> 5         char_with_na error 0 (non-NA) cases
-#> 6           int_single    lm               NA
-#> 7         int_multiple    lm               NA
-#> 8          int_with_na    lm               NA
-#> 9           dbl_single error 0 (non-NA) cases
-#> 10        dbl_mutliple error 0 (non-NA) cases
-#> 11         dbl_with_na error 0 (non-NA) cases
-#> 12         fctr_single    lm               NA
-#> 13       fctr_multiple    lm               NA
-#> 14        fctr_with_na    lm               NA
-#> 15 fctr_missing_levels    lm               NA
-#> 16          log_single    lm               NA
-#> 17        log_mutliple    lm               NA
-#> 18         log_with_na    lm               NA
+#>             fuzz_input messages warnings           errors result_classes
+#>                  (chr)    (chr)    (chr)            (chr)          (chr)
+#> 1          char_single       NA       NA 0 (non-NA) cases             NA
+#> 2    char_single_blank       NA       NA 0 (non-NA) cases             NA
+#> 3        char_multiple       NA       NA 0 (non-NA) cases             NA
+#> 4  char_multiple_blank       NA       NA 0 (non-NA) cases             NA
+#> 5         char_with_na       NA       NA 0 (non-NA) cases             NA
+#> 6           int_single       NA       NA               NA             lm
+#> 7         int_multiple       NA       NA               NA             lm
+#> 8          int_with_na       NA       NA               NA             lm
+#> 9           dbl_single       NA       NA 0 (non-NA) cases             NA
+#> 10        dbl_mutliple       NA       NA 0 (non-NA) cases             NA
+#> 11         dbl_with_na       NA       NA 0 (non-NA) cases             NA
+#> 12         fctr_single       NA       NA               NA             lm
+#> 13       fctr_multiple       NA       NA               NA             lm
+#> 14        fctr_with_na       NA       NA               NA             lm
+#> 15 fctr_missing_levels       NA       NA               NA             lm
+#> 16          lgl_single       NA       NA               NA             lm
+#> 17        lgl_mutliple       NA       NA               NA             lm
+#> 18         lgl_with_na       NA       NA               NA             lm
+
+model <- value_returned(fuzz_results, "int_multiple")
+coefficients(model)
+#>  (Intercept)  Petal.Width Petal.Length 
+#>          0.8           NA          3.0
 ```
 
 ### Tests
