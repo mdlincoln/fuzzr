@@ -11,7 +11,7 @@ value_returned(fuzz_results, index)
 
 \item{index}{The test index (by position), or name, whose results to access. Same as the
 row number in the data frame returned by
-\code{\link{summary.fuzz_results}}.}
+\code{\link{as.data.frame.fuzz_results}}.}
 }
 \description{
 Access the object returned by the fuzz test

@@ -4,11 +4,13 @@
 \alias{as.data.frame.fuzz_results}
 \title{Summarize fuzz test results as a data frame}
 \usage{
-\method{as.data.frame}{fuzz_results}(fuzz_results, class_format = c("concat",
+\method{as.data.frame}{fuzz_results}(x, ..., class_format = c("concat",
   "nest"))
 }
 \arguments{
-\item{fuzz_results}{object returned by \code{\link{fuzz_function}}.}
+\item{x}{Object returned by \code{\link{fuzz_function}}.}
+
+\item{...}{Additional arguments to be passed to or from methods.}
 
 \item{class_format}{How to format function return classes. \code{"concat"} (the
 default) collapses multiple class names into one comma-delimited character

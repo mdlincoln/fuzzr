@@ -2,7 +2,8 @@
 
 #' Summarize fuzz test results as a data frame
 #'
-#' @param fuzz_results object returned by \code{\link{fuzz_function}}.
+#' @param x Object returned by \code{\link{fuzz_function}}.
+#' @param ... Additional arguments to be passed to or from methods.
 #' @param class_format How to format function return classes. \code{"concat"} (the
 #'   default) collapses multiple class names into one comma-delimited character
 #'   scalar, which can be easier to read on the console. \code{"nest"} creates a
@@ -19,7 +20,7 @@
 #'   }
 #'
 #' @export
-as.data.frame.fuzz_results <- function(fuzz_results, class_format = c("concat", "nest")) {
+as.data.frame.fuzz_results <- function(x, ..., class_format = c("concat", "nest")) {
   class_format <- match.arg(class_format)
 
   summary_handler <- switch(
@@ -27,7 +28,7 @@ as.data.frame.fuzz_results <- function(fuzz_results, class_format = c("concat", 
     "concat" = concat_summary,
     "nest" = nest_summary)
 
-  fdf <- attr(fuzz_results, "data.frame")
+  fdf <- attr(x, "data.frame")
   summary_handler(fdf)
 }
 
@@ -36,7 +37,7 @@ as.data.frame.fuzz_results <- function(fuzz_results, class_format = c("concat", 
 #' @param fuzz_results fuzz_results object
 #' @param index The test index (by position), or name, whose results to access. Same as the
 #'   row number in the data frame returned by
-#'   \code{\link{summary.fuzz_results}}.
+#'   \code{\link{as.data.frame.fuzz_results}}.
 #'
 #' @export
 value_returned <- function(fuzz_results, index) {
