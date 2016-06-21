@@ -4,10 +4,10 @@
 \alias{value_returned}
 \title{Access the object returned by the fuzz test}
 \usage{
-value_returned(fuzz_results, index)
+value_returned(fr, index)
 }
 \arguments{
-\item{fuzz_results}{fuzz_results object}
+\item{fr}{fuzz_results object}
 
 \item{index}{The test index (by position), or name, whose results to access. Same as the
 row number in the data frame returned by

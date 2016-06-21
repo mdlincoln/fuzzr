@@ -34,20 +34,20 @@ as.data.frame.fuzz_results <- function(x, ..., class_format = c("concat", "nest"
 
 #' Access the object returned by the fuzz test
 #'
-#' @param fuzz_results fuzz_results object
+#' @param fr fuzz_results object
 #' @param index The test index (by position), or name, whose results to access. Same as the
 #'   row number in the data frame returned by
 #'   \code{\link{as.data.frame.fuzz_results}}.
 #'
 #' @export
-value_returned <- function(fuzz_results, index) {
+value_returned <- function(fr, index) {
   assertthat::assert_that(assertthat::is.scalar(index))
-  getElement(fuzz_results, index)
+  getElement(fr, index)
 }
 
 # Internal functions ----
 
-# Concatenates multiple value classes into one character scalar
+# Concatenates multiple values into one character scalar
 concat_summary <- function(fdf) {
   unique_tests <- unique(fdf$fuzz_input)
   g_dots <- list(~fuzz_input, ~message)
@@ -64,36 +64,24 @@ nest_summary <- function(fdf) {
 }
 
 # Compose and attach a summary dataframe of results
-compose_results <- function(fuzz_results) {
-  attr(fuzz_results, "data.frame") <- fuzz_as_data_frame(fuzz_results)
-  structure(fuzz_results, class = "fuzz_results")
+compose_results <- function(fr) {
+  attr(fr, "summary_results") <- map_fuzz_results(fr)
+  structure(fr, class = "fuzz_results")
 }
 
 # Format fuzz testing results as a data frame
-fuzz_as_data_frame <- function(fuzz_results, class_format) {
-  purrr::map_df(fuzz_results, parse_fuzz_result, .id = "fuzz_input")
+map_fuzz_results <- function(fr) {
+  purrr::map_df(fr, parse_fuzz_result, .id = "fuzz_test")
 }
 
-# Test if object is of the class fuzz-condition
-is.condition <- function(x) inherits(x, c("fuzz-message", "fuzz-warning", "fuzz-error"))
+parse_fuzz_result <- function(fr) {
+  fr$result_classes <- ifelse(is.null(fr$result), NA,
+                              paste(class(fr$result), collapse = "; "))
+  fr <- purrr::map_at(fr, function(x) {
+    cl <- paste(x, collapse = "; ")
+    ifelse(nzchar(cl), cl, as.character(NA))
+  }, .at = c("output", "messages", "warnings", "error"))
 
-parse_fuzz_result <- function(fuzz_result) {
-  if(is.condition(fuzz_result)) {
-    data.frame(
-      class = pretty_class(class(fuzz_result)),
-      message = fuzz_result$message,
-    stringsAsFactors = FALSE)
-  } else {
-    data.frame(
-      class = class(fuzz_result),
-      message = as.character(NA),
-    stringsAsFactors = FALSE)
-  }
-}
-
-pretty_class <- function(m) {
-  switch(m,
-         "fuzz-message" = "message",
-         "fuzz-warning" = "warning",
-         "fuzz-error" = "error")
+  fr$result <- NULL
+  as.data.frame(fr, stringsAsFactors = FALSE)
 }

@@ -39,15 +39,17 @@ fuzz_fun_arg <- function(fun, arg, .dots, tests = fuzz_all()) {
 # Custom tryCatch function to catch messages, warnings, and errors with messages
 # along with original calls
 try_fuzz <- function(expr) {
-  tryCatch(expr,
-           message = function(c) structure(construct_condition(c), class = "fuzz-message"),
-           warning = function(c) structure(construct_condition(c), class = "fuzz-warning"),
-           error = function(c) structure(construct_condition(c), class = "fuzz-error"))
+  tryCatch(testthat::evaluate_promise(expr),
+           error = function(c) construct_error(c))
 }
 
-construct_condition <- function(c) {
+construct_error <- function(c) {
   list(
-    message = conditionMessage(c),
-    call = conditionCall(c))
+    result = NULL,
+    output = NULL,
+    warnings = NULL,
+    messages = NULL,
+    error = conditionMessage(c)
+  )
 }
 

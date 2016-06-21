@@ -11,5 +11,5 @@ Imports:
   assertthat,
   dplyr,
   purrr,
+  testthat,
   tidyr
-Suggests: testthat
