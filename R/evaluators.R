@@ -36,20 +36,44 @@ fuzz_fun_arg <- function(fun, arg, .dots, tests = fuzz_all()) {
   })
 }
 
-# Custom tryCatch function to catch messages, warnings, and errors with messages
-# along with original calls
+# Custom tryCatch/withCallingHandlers function to catch messages, warnings, and
+# errors along with any values returned by the expression. Returns a list of
+# value, messages, warnings, and errors.
 try_fuzz <- function(expr) {
-  tryCatch(testthat::evaluate_promise(expr),
-           error = function(c) construct_error(c))
-}
+  messages <- NULL
+  warnings <- NULL
+  errors <- NULL
 
-construct_error <- function(c) {
+  message_handler <- function(c) {
+    messages <<- c(messages, conditionMessage(c))
+    invokeRestart("muffleMessage")
+  }
+
+  warning_handler <- function(c) {
+    warnings <<- c(warnings, conditionMessage(c))
+    invokeRestart("muffleWarning")
+  }
+
+  error_handler <- function(c) {
+    errors <<- c(errors, conditionMessage(c))
+    return(NULL)
+  }
+
+  # Little trick: that first tryCatch() will return values from the expression
+  # to the "value" index in this list, but will pass errors to error_handler
+  # (which returns NULL "value", incidentally.) In the event of messages or
+  # warnings, handling is passed up to withCallingHandlers, which passes them
+  # down again to message_handler or warning_handler, respectively. Once the
+  # expression is done evaluating, messages, warnings, and errors are assigned
+  # to the list, which is returned as the final result of try_fuzz
   list(
-    result = NULL,
-    output = NULL,
-    warnings = NULL,
-    messages = NULL,
-    error = conditionMessage(c)
+    value = withCallingHandlers(
+      tryCatch(expr, error = error_handler),
+      message = message_handler,
+      warning = warning_handler
+      ),
+    messages = messages,
+    warnings = warnings,
+    errors = errors
   )
 }
-

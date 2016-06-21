@@ -20,16 +20,8 @@
 #'   }
 #'
 #' @export
-as.data.frame.fuzz_results <- function(x, ..., class_format = c("concat", "nest")) {
-  class_format <- match.arg(class_format)
-
-  summary_handler <- switch(
-    class_format,
-    "concat" = concat_summary,
-    "nest" = nest_summary)
-
-  fdf <- attr(x, "data.frame")
-  summary_handler(fdf)
+as.data.frame.fuzz_results <- function(x, ..., sep = "; ", .id = "fuzz_input") {
+  purrr::map_df(x, parse_fuzz_result, sep, .id = .id)
 }
 
 #' Access the object returned by the fuzz test
@@ -42,46 +34,27 @@ as.data.frame.fuzz_results <- function(x, ..., class_format = c("concat", "nest"
 #' @export
 value_returned <- function(fr, index) {
   assertthat::assert_that(assertthat::is.scalar(index))
-  getElement(fr, index)
+  getElement(getElement(fr, index), "value")
 }
 
 # Internal functions ----
 
-# Concatenates multiple values into one character scalar
-concat_summary <- function(fdf) {
-  unique_tests <- unique(fdf$fuzz_input)
-  g_dots <- list(~fuzz_input, ~message)
-  s_dots <- list(~as.character(paste0(class, collapse = ", ")))
-  summarized <- dplyr::ungroup(dplyr::summarize_(dplyr::group_by_(fdf, .dots = g_dots), .dots = stats::setNames(s_dots, "class")))
-
-  # Return a data frame sorted in the same order in which it was input
-  summarized[match(unique_tests, summarized$fuzz_input), ]
-}
-
-# Nests multiple classes as a list column in a data frame
-nest_summary <- function(fdf) {
-  tidyr::nest_(fdf, key_col = "class", nest_cols = "class")
-}
-
-# Compose and attach a summary dataframe of results
 compose_results <- function(fr) {
-  attr(fr, "summary_results") <- map_fuzz_results(fr)
   structure(fr, class = "fuzz_results")
 }
 
-# Format fuzz testing results as a data frame
-map_fuzz_results <- function(fr) {
-  purrr::map_df(fr, parse_fuzz_result, .id = "fuzz_test")
-}
+parse_fuzz_result <- function(fr, sep) {
+  fr$result_classes <- ifelse(is.null(fr$value), NA,
+                              paste(class(fr$value), collapse = sep))
 
-parse_fuzz_result <- function(fr) {
-  fr$result_classes <- ifelse(is.null(fr$result), NA,
-                              paste(class(fr$result), collapse = "; "))
   fr <- purrr::map_at(fr, function(x) {
-    cl <- paste(x, collapse = "; ")
-    ifelse(nzchar(cl), cl, as.character(NA))
-  }, .at = c("output", "messages", "warnings", "error"))
+    if(is.null(x)) {
+      return(as.character(NA))
+    } else {
+      paste(x, collapse = sep)
+    }
+  }, .at = c("messages", "warnings", "errors"))
 
-  fr$result <- NULL
+  fr$value <- NULL
   as.data.frame(fr, stringsAsFactors = FALSE)
 }

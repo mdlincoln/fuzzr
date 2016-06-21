@@ -4,8 +4,7 @@
 \alias{as.data.frame.fuzz_results}
 \title{Summarize fuzz test results as a data frame}
 \usage{
-\method{as.data.frame}{fuzz_results}(x, ..., class_format = c("concat",
-  "nest"))
+\method{as.data.frame}{fuzz_results}(x, ..., sep = "; ", .id = "fuzz_input")
 }
 \arguments{
 \item{x}{Object returned by \code{\link{fuzz_function}}.}
