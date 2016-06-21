@@ -9,8 +9,8 @@ value_returned(fr, index)
 \arguments{
 \item{fr}{fuzz_results object}
 
-\item{index}{The test index (by position), or name, whose results to access. Same as the
-row number in the data frame returned by
+\item{index}{The test index (by position), or name, whose results to access.
+Same as the row number in the data frame returned by
 \code{\link{as.data.frame.fuzz_results}}.}
 }
 \description{

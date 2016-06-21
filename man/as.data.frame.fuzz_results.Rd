@@ -4,27 +4,28 @@
 \alias{as.data.frame.fuzz_results}
 \title{Summarize fuzz test results as a data frame}
 \usage{
-\method{as.data.frame}{fuzz_results}(x, ..., sep = "; ", .id = "fuzz_input")
+\method{as.data.frame}{fuzz_results}(x, ..., delim = "; ",
+  .id = "fuzz_input")
 }
 \arguments{
 \item{x}{Object returned by \code{\link{fuzz_function}}.}
 
 \item{...}{Additional arguments to be passed to or from methods.}
 
-\item{class_format}{How to format function return classes. \code{"concat"} (the
-default) collapses multiple class names into one comma-delimited character
-scalar, which can be easier to read on the console. \code{"nest"} creates a
-nested data frame, saving object classes in a list column using
-\code{\link[tidyr]{nest}}.}
+\item{delim}{The delimiter to use in fields like \code{messages} or
+\code{warnings} where there may be multiple results.}
+
+\item{.id}{Quoted column name for the name of the fuzz input used for each
+test.}
 }
 \value{
 A data frame with the following columns: \describe{
   \item{\code{fuzz_input}}{The name of the fuzz test performed.}
-  \item{\code{class}}{The class of response. If a condition was returned, one
-  of \code{message}, \code{warning}, or \code{error}; if a value was
-  returned, the \code{\link{class}} of that value.}
-  \item{\code{message}}{The
-  condition message, if applicable.}
+  \item{\code{messages}}{Delimited messages, if applicable.}
+  \item{\code{warnings}}{Delimited warnnings, if applicable.}
+  \item{\code{errors}}{Error returned, if applicable.}
+  \item{\code{value_classes}}{Delimited classes of the object returned by the
+   function, if applicable}
   }
 }
 \description{
