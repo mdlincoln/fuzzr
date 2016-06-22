@@ -2,13 +2,13 @@
 
 #' Fuzz test inputs
 #' @export
-fuzz_all <- function() {
-  c(fuzz_char(), fuzz_int(), fuzz_dbl(), fuzz_fctr(), fuzz_lgl())
+test_all <- function() {
+  c(test_char(), test_int(), test_dbl(), test_fctr(), test_lgl())
 }
 
-#' @describeIn fuzz_all Character vectors
+#' @describeIn test_all Character vectors
 #' @export
-fuzz_char <- function() {
+test_char <- function() {
   list(
     char_single = c("a"),
     char_single_blank = "",
@@ -18,9 +18,9 @@ fuzz_char <- function() {
   )
 }
 
-#' @describeIn fuzz_all Integer vectors
+#' @describeIn test_all Integer vectors
 #' @export
-fuzz_int <- function() {
+test_int <- function() {
   list(
     int_single = 1L,
     int_multiple = 1:3,
@@ -28,9 +28,9 @@ fuzz_int <- function() {
   )
 }
 
-#' @describeIn fuzz_all Double vectors
+#' @describeIn test_all Double vectors
 #' @export
-fuzz_dbl <- function() {
+test_dbl <- function() {
   list(
     dbl_single = stats::runif(1),
     dbl_mutliple = stats::runif(3),
@@ -38,9 +38,9 @@ fuzz_dbl <- function() {
   )
 }
 
-#' @describeIn fuzz_all Logical vectors
+#' @describeIn test_all Logical vectors
 #' @export
-fuzz_lgl <- function() {
+test_lgl <- function() {
   list(
     lgl_single = TRUE,
     lgl_mutliple = c(TRUE, FALSE, FALSE),
@@ -48,9 +48,9 @@ fuzz_lgl <- function() {
   )
 }
 
-#' @describeIn fuzz_all Factor vectors
+#' @describeIn test_all Factor vectors
 #' @export
-fuzz_fctr <- function() {
+test_fctr <- function() {
   list(
     fctr_single = as.factor("a"),
     fctr_multiple = as.factor(c("a", "b", "c")),

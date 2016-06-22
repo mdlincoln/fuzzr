@@ -12,7 +12,7 @@
 #' @seealso \code{\link{as.data.frame.fuzz_results}} and \code{\link{value_returned}} to access fuzz test results.
 #'
 #' @export
-fuzz_function <- function(fun, arg_name, ..., tests = fuzz_all()) {
+fuzz_function <- function(fun, arg_name, ..., tests = test_all()) {
   .dots = list(...)
 
   # Retrieve the actual function if given a character name

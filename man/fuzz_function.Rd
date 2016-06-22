@@ -4,7 +4,7 @@
 \alias{fuzz_function}
 \title{Fuzz-test a function}
 \usage{
-fuzz_function(fun, arg_name, ..., tests = fuzz_all())
+fuzz_function(fun, arg_name, ..., tests = test_all())
 }
 \arguments{
 \item{fun}{A function, either bare or quoted.}
