@@ -3,7 +3,7 @@
 #' Fuzz test inputs
 #' @export
 test_all <- function() {
-  c(test_char(), test_int(), test_dbl(), test_fctr(), test_lgl())
+  c(test_char(), test_int(), test_dbl(), test_fctr(), test_lgl(), test_date())
 }
 
 #' @describeIn test_all Character vectors
@@ -56,5 +56,15 @@ test_fctr <- function() {
     fctr_multiple = as.factor(c("a", "b", "c")),
     fctr_with_na = as.factor(c("a", "b", NA)),
     fctr_missing_levels = factor(c("a", "b", "c"), levels = letters[1:4])
+  )
+}
+
+#' @describeIn test_all Date vectors
+#' @export
+test_date <- function() {
+  list(
+    date_single = as.Date("2001-01-01"),
+    date_multiple = as.Date(c("2001-01-01", "1950-05-05")),
+    date_with_na = as.Date(c("2001-01-01", NA, "1950-05-05"))
   )
 }

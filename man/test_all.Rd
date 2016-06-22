@@ -3,6 +3,7 @@
 \name{test_all}
 \alias{test_all}
 \alias{test_char}
+\alias{test_date}
 \alias{test_dbl}
 \alias{test_fctr}
 \alias{test_int}
@@ -20,6 +21,8 @@ test_dbl()
 test_lgl()
 
 test_fctr()
+
+test_date()
 }
 \description{
 Fuzz test inputs
@@ -35,5 +38,7 @@ Fuzz test inputs
 \item \code{test_lgl}: Logical vectors
 
 \item \code{test_fctr}: Factor vectors
+
+\item \code{test_date}: Date vectors
 }}
 
