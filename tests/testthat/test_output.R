@@ -10,7 +10,6 @@ test_that("fuzz_function returns a data.frame object", {
 test_that("Values can be extracted from a fuzz_results object", {
   expect_null(value_returned(lm_fuzz, 1))
   expect_null(value_returned(lm_fuzz, "char_single"))
-  expect_s3_class(value_returned(lm_fuzz, 6), "lm")
   expect_s3_class(value_returned(lm_fuzz, "int_single"), "lm")
 })
 
