@@ -49,6 +49,7 @@ fuzz_fun_arg <- function(fun, arg, .dots, tests) {
 # value, messages, warnings, and errors.
 try_fuzz <- function(expr) {
   messages <- NULL
+  output <- NULL
   warnings <- NULL
   errors <- NULL
 
@@ -74,12 +75,17 @@ try_fuzz <- function(expr) {
   # down again to message_handler or warning_handler, respectively. Once the
   # expression is done evaluating, messages, warnings, and errors are assigned
   # to the list, which is returned as the final result of try_fuzz
-  list(
-    value = withCallingHandlers(
+
+  output <- utils::capture.output({
+    value <- withCallingHandlers(
       tryCatch(expr, error = error_handler),
       message = message_handler,
       warning = warning_handler
-      ),
+    )}, type = "output")
+
+  list(
+    value = value,
+    output = output,
     messages = messages,
     warnings = warnings,
     errors = errors

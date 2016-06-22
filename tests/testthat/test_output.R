@@ -18,8 +18,10 @@ test_that("Multi-class returns can be handled appropriately", {
   mf <- function(x) {
     r <- x
     class(r) <- c("a", "b", "c")
+    print("output 1")
     warning("warn 1")
     message("mess 1")
+    print("output 2")
     warning("warn 2")
     message("mess 2")
     if(x == 1) stop("Error at 1")
@@ -31,6 +33,7 @@ test_that("Multi-class returns can be handled appropriately", {
   cdf <- as.data.frame(fmf, sep = "|")
 
   expect_true(is.character(fdf$fuzz_input))
+  expect_true(is.character(fdf$output))
   expect_true(is.character(fdf$messages))
   expect_true(is.character(fdf$warnings))
   expect_true(is.character(fdf$errors))
