@@ -37,7 +37,7 @@ fuzz_function <- function(fun, arg_name, ..., tests = test_all()) {
 
 # Map a series of tests along a function argument, returning a list of results
 # (and/or conditions) named after the fuzz test.
-fuzz_fun_arg <- function(fun, arg, .dots, tests = fuzz_all()) {
+fuzz_fun_arg <- function(fun, arg, .dots, tests) {
   purrr::map(tests, function(x) {
     fun_arg <- stats::setNames(list(x), arg)
     try_fuzz(do.call(fun, args = c(fun_arg, .dots)))
