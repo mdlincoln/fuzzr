@@ -8,6 +8,7 @@
 \alias{test_fctr}
 \alias{test_int}
 \alias{test_lgl}
+\alias{test_raw}
 \title{Fuzz test inputs}
 \usage{
 test_all()
@@ -23,6 +24,8 @@ test_lgl()
 test_fctr()
 
 test_date()
+
+test_raw()
 }
 \description{
 Fuzz test inputs
@@ -40,5 +43,7 @@ Fuzz test inputs
 \item \code{test_fctr}: Factor vectors
 
 \item \code{test_date}: Date vectors
+
+\item \code{test_raw}: Raw vectors
 }}
 

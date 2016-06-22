@@ -3,13 +3,15 @@
 #' Fuzz test inputs
 #' @export
 test_all <- function() {
-  c(test_char(), test_int(), test_dbl(), test_fctr(), test_lgl(), test_date())
+  c(test_char(), test_int(), test_dbl(), test_fctr(), test_lgl(), test_date(),
+    test_raw())
 }
 
 #' @describeIn test_all Character vectors
 #' @export
 test_char <- function() {
   list(
+    char_empty = character(),
     char_single = c("a"),
     char_single_blank = "",
     char_multiple = c("a", "b", "c"),
@@ -22,6 +24,7 @@ test_char <- function() {
 #' @export
 test_int <- function() {
   list(
+    int_empty = integer(),
     int_single = 1L,
     int_multiple = 1:3,
     int_with_na = c(1:2, NA)
@@ -32,6 +35,7 @@ test_int <- function() {
 #' @export
 test_dbl <- function() {
   list(
+    dbl_empty = double(),
     dbl_single = stats::runif(1),
     dbl_mutliple = stats::runif(3),
     dbl_with_na = c(stats::runif(2), NA)
@@ -42,6 +46,7 @@ test_dbl <- function() {
 #' @export
 test_lgl <- function() {
   list(
+    lgl_empty = logical(),
     lgl_single = TRUE,
     lgl_mutliple = c(TRUE, FALSE, FALSE),
     lgl_with_na = c(TRUE, NA, FALSE)
@@ -52,6 +57,7 @@ test_lgl <- function() {
 #' @export
 test_fctr <- function() {
   list(
+    fctr_empty = factor(),
     fctr_single = as.factor("a"),
     fctr_multiple = as.factor(c("a", "b", "c")),
     fctr_with_na = as.factor(c("a", "b", NA)),
@@ -68,3 +74,13 @@ test_date <- function() {
     date_with_na = as.Date(c("2001-01-01", NA, "1950-05-05"))
   )
 }
+
+#' @describeIn test_all Raw vectors
+#' @export
+test_raw <- function() {
+  list(
+    raw_empty = raw(),
+    raw_char = charToRaw("b")
+  )
+}
+
