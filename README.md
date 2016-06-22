@@ -5,7 +5,7 @@ fuzzr
 
 [![Project Status: WIP - Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip) [![Travis-CI Build Status](https://travis-ci.org/mdlincoln/fuzzr.svg?branch=master)](https://travis-ci.org/mdlincoln/fuzzr) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/mdlincoln/fuzzr?branch=master&svg=true)](https://ci.appveyor.com/project/mdlincoln/fuzzr)
 
-fuzzr implements some simple ["fuzz tests"](https://en.wikipedia.org/wiki/Fuzz_testing) for your R functions, passing in a wide array of inputs and returning a report (normally as a data.frame) on how your function reacts.
+fuzzr implements some simple ["fuzz tests"](https://en.wikipedia.org/wiki/Fuzz_testing) for your R functions, passing in a wide array of inputs and returning a report on how your function reacts.
 
 Installation
 ------------
@@ -17,38 +17,40 @@ devtools::install_github("mdlincoln/fuzzr")
 Usage
 -----
 
-Evaluate a function argument by supplying it's quoted name along with the tests to run to `fuzz_function`, along with any other required static values. `fuzz_function` returns a "fuzz\_results" object that stores conditions raised by a function (message, warning, or error) along with any value returned by that function. You can preview this list with
+Evaluate a function argument by supplying it's quoted name along with the tests to run to `fuzz_function`, along with any other required static values. `fuzz_function` returns a "fuzz\_results" object that stores conditions raised by a function (message, warning, or error) along with any value returned by that function.
 
 ``` r
 library(fuzzr)
 fuzz_results <- fuzz_function(fun = lm, arg_name = "subset", data = iris, 
                               formula = Sepal.Length ~ Petal.Width + Petal.Length, 
                               tests = test_all())
+```
 
+You can render these results as a data frame:
+
+``` r
 as.data.frame(fuzz_results)
-#> Source: local data frame [18 x 5]
+#> Source: local data frame [21 x 6]
 #> 
-#>             fuzz_input messages warnings           errors result_classes
-#>                  (chr)    (chr)    (chr)            (chr)          (chr)
-#> 1          char_single       NA       NA 0 (non-NA) cases             NA
-#> 2    char_single_blank       NA       NA 0 (non-NA) cases             NA
-#> 3        char_multiple       NA       NA 0 (non-NA) cases             NA
-#> 4  char_multiple_blank       NA       NA 0 (non-NA) cases             NA
-#> 5         char_with_na       NA       NA 0 (non-NA) cases             NA
-#> 6           int_single       NA       NA               NA             lm
-#> 7         int_multiple       NA       NA               NA             lm
-#> 8          int_with_na       NA       NA               NA             lm
-#> 9           dbl_single       NA       NA 0 (non-NA) cases             NA
-#> 10        dbl_mutliple       NA       NA 0 (non-NA) cases             NA
-#> 11         dbl_with_na       NA       NA 0 (non-NA) cases             NA
-#> 12         fctr_single       NA       NA               NA             lm
-#> 13       fctr_multiple       NA       NA               NA             lm
-#> 14        fctr_with_na       NA       NA               NA             lm
-#> 15 fctr_missing_levels       NA       NA               NA             lm
-#> 16          lgl_single       NA       NA               NA             lm
-#> 17        lgl_mutliple       NA       NA               NA             lm
-#> 18         lgl_with_na       NA       NA               NA             lm
+#>             fuzz_input output messages warnings           errors
+#>                  (chr)  (chr)    (chr)    (chr)            (chr)
+#> 1          char_single              NA       NA 0 (non-NA) cases
+#> 2    char_single_blank              NA       NA 0 (non-NA) cases
+#> 3        char_multiple              NA       NA 0 (non-NA) cases
+#> 4  char_multiple_blank              NA       NA 0 (non-NA) cases
+#> 5         char_with_na              NA       NA 0 (non-NA) cases
+#> 6           int_single              NA       NA               NA
+#> 7         int_multiple              NA       NA               NA
+#> 8          int_with_na              NA       NA               NA
+#> 9           dbl_single              NA       NA 0 (non-NA) cases
+#> 10        dbl_mutliple              NA       NA 0 (non-NA) cases
+#> ..                 ...    ...      ...      ...              ...
+#> Variables not shown: result_classes (chr)
+```
 
+You can also access the value returned by any one test by calling the index or name of that test with `value_returned`:
+
+``` r
 model <- value_returned(fuzz_results, "int_multiple")
 coefficients(model)
 #>  (Intercept)  Petal.Width Petal.Length 
