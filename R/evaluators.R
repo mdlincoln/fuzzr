@@ -2,9 +2,9 @@
 
 #' Fuzz-test a function
 #'
-#' @param fun A function
-#' @param arg_name Quoted name of the argument to fuzz test
-#' @param ... Static values to pass to fun
+#' @param fun A function, either bare or quoted.
+#' @param arg_name Quoted name of the argument to fuzz test.
+#' @param ... Other non-dynamic values to pass to \code{fun}.
 #' @param tests Which fuzz tests to run. Accepts a named list of inputs, defaulting to \code{\link{fuzz_all}}.
 #'
 #' @return A data frame of fuzz test results.
@@ -12,6 +12,12 @@
 #' @export
 fuzz_function <- function(fun, arg_name, ..., tests = fuzz_all()) {
   .dots = list(...)
+
+  # Retrieve the actual function if given a character name
+  if(is.character(fun)) {
+    assertthat::assert_that(assertthat::is.string(fun))
+    fun <- get(fun)
+  }
 
   assertthat::assert_that(is.function(fun))
   assertthat::assert_that(assertthat::is.string(arg_name))

@@ -7,11 +7,11 @@
 fuzz_function(fun, arg_name, ..., tests = fuzz_all())
 }
 \arguments{
-\item{fun}{A function}
+\item{fun}{A function, either bare or quoted.}
 
-\item{arg_name}{Quoted name of the argument to fuzz test}
+\item{arg_name}{Quoted name of the argument to fuzz test.}
 
-\item{...}{Static values to pass to fun}
+\item{...}{Other non-dynamic values to pass to \code{fun}.}
 
 \item{tests}{Which fuzz tests to run. Accepts a named list of inputs, defaulting to \code{\link{fuzz_all}}.}
 }
