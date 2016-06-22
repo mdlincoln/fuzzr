@@ -23,7 +23,7 @@ Evaluate a function argument by supplying it's quoted name along with the tests 
 library(fuzzr)
 fuzz_results <- fuzz_function(fun = lm, arg_name = "subset", data = iris, 
                               formula = Sepal.Length ~ Petal.Width + Petal.Length, 
-                              tests = fuzz_all())
+                              tests = test_all())
 
 as.data.frame(fuzz_results)
 #> Source: local data frame [18 x 5]
@@ -57,10 +57,10 @@ coefficients(model)
 
 ### Tests
 
-Tests are set by passing functions that return named lists of input values. These values will be passed as function arguments. Several default suites are provided with this package, such as `fuzz_char`, however you may implement your own by passing a function that returns a similarly-formatted list.
+Tests are set by passing functions that return named lists of input values. These values will be passed as function arguments. Several default suites are provided with this package, such as `test_char`, however you may implement your own by passing a function that returns a similarly-formatted list.
 
 ``` r
-fuzz_char()
+test_char()
 #> $char_single
 #> [1] "a"
 #> 

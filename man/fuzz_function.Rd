@@ -13,7 +13,7 @@ fuzz_function(fun, arg_name, ..., tests = test_all())
 
 \item{...}{Other non-dynamic values to pass to \code{fun}.}
 
-\item{tests}{Which fuzz tests to run. Accepts a named list of inputs, defaulting to \code{\link{fuzz_all}}.}
+\item{tests}{Which fuzz tests to run. Accepts a named list of inputs, defaulting to \code{\link{test_all}}.}
 }
 \value{
 A \code{fuzz_results} object.

@@ -5,7 +5,7 @@
 #' @param fun A function, either bare or quoted.
 #' @param arg_name Quoted name of the argument to fuzz test.
 #' @param ... Other non-dynamic values to pass to \code{fun}.
-#' @param tests Which fuzz tests to run. Accepts a named list of inputs, defaulting to \code{\link{fuzz_all}}.
+#' @param tests Which fuzz tests to run. Accepts a named list of inputs, defaulting to \code{\link{test_all}}.
 #'
 #' @return A \code{fuzz_results} object.
 #'
