@@ -16,9 +16,12 @@ fuzz_function(fun, arg_name, ..., tests = fuzz_all())
 \item{tests}{Which fuzz tests to run. Accepts a named list of inputs, defaulting to \code{\link{fuzz_all}}.}
 }
 \value{
-A data frame of fuzz test results.
+A \code{fuzz_results} object.
 }
 \description{
 Fuzz-test a function
+}
+\seealso{
+\code{\link{as.data.frame.fuzz_results}} and \code{\link{value_returned}} to access fuzz test results.
 }
 

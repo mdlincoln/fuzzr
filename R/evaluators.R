@@ -7,7 +7,9 @@
 #' @param ... Other non-dynamic values to pass to \code{fun}.
 #' @param tests Which fuzz tests to run. Accepts a named list of inputs, defaulting to \code{\link{fuzz_all}}.
 #'
-#' @return A data frame of fuzz test results.
+#' @return A \code{fuzz_results} object.
+#'
+#' @seealso \code{\link{as.data.frame.fuzz_results}} and \code{\link{value_returned}} to access fuzz test results.
 #'
 #' @export
 fuzz_function <- function(fun, arg_name, ..., tests = fuzz_all()) {
