@@ -30,20 +30,20 @@ You can render these results as a data frame:
 
 ``` r
 as.data.frame(fuzz_results)
-#> Source: local data frame [21 x 6]
+#> Source: local data frame [28 x 6]
 #> 
 #>             fuzz_input output messages warnings           errors
 #>                  (chr)  (chr)    (chr)    (chr)            (chr)
-#> 1          char_single              NA       NA 0 (non-NA) cases
-#> 2    char_single_blank              NA       NA 0 (non-NA) cases
-#> 3        char_multiple              NA       NA 0 (non-NA) cases
-#> 4  char_multiple_blank              NA       NA 0 (non-NA) cases
-#> 5         char_with_na              NA       NA 0 (non-NA) cases
-#> 6           int_single              NA       NA               NA
-#> 7         int_multiple              NA       NA               NA
-#> 8          int_with_na              NA       NA               NA
-#> 9           dbl_single              NA       NA 0 (non-NA) cases
-#> 10        dbl_mutliple              NA       NA 0 (non-NA) cases
+#> 1           char_empty              NA       NA 0 (non-NA) cases
+#> 2          char_single              NA       NA 0 (non-NA) cases
+#> 3    char_single_blank              NA       NA 0 (non-NA) cases
+#> 4        char_multiple              NA       NA 0 (non-NA) cases
+#> 5  char_multiple_blank              NA       NA 0 (non-NA) cases
+#> 6         char_with_na              NA       NA 0 (non-NA) cases
+#> 7            int_empty              NA       NA 0 (non-NA) cases
+#> 8           int_single              NA       NA               NA
+#> 9         int_multiple              NA       NA               NA
+#> 10         int_with_na              NA       NA               NA
 #> ..                 ...    ...      ...      ...              ...
 #> Variables not shown: result_classes (chr)
 ```
@@ -63,6 +63,9 @@ Tests are set by passing functions that return named lists of input values. Thes
 
 ``` r
 test_char()
+#> $char_empty
+#> character(0)
+#> 
 #> $char_single
 #> [1] "a"
 #> 
