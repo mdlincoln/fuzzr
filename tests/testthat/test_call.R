@@ -1,4 +1,5 @@
 context("fuzz_function rejects poor inputs")
+library(purrr)
 
 test_that("Non-functions throw errors", {
   expect_error(fuzz_function(fun = "non-function"))
@@ -21,4 +22,11 @@ test_that("Built-in tests work properly", {
 
 test_that("Both bare and quoted function names work", {
   expect_equivalent(fuzz_function(lm, "subset", data = iris, formula = Sepal.Length ~ Sepal.Width), fuzz_function("lm", "subset", data = iris, formula = Sepal.Length ~ Sepal.Width))
+})
+
+test_that("test_all contains every individual test_ function", {
+  pkgnames <- as.character(lsf.str("package:fuzzr"))
+  testnames <- setdiff(pkgnames[grep("test_", pkgnames)], "test_all")
+  alltestnames <- map(testnames, function(x) names(get(x)())) %>% simplify()
+  expect_true(all(alltestnames %in% names(test_all())))
 })
