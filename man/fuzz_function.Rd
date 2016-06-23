@@ -11,9 +11,11 @@ fuzz_function(fun, arg_name, ..., tests = test_all())
 
 \item{arg_name}{Quoted name of the argument to fuzz test.}
 
-\item{...}{Other non-dynamic values to pass to \code{fun}.}
+\item{...}{Other non-dynamic arguments to pass to \code{fun}. These will be
+repeated for every one of the \code{tests}.}
 
-\item{tests}{Which fuzz tests to run. Accepts a named list of inputs, defaulting to \code{\link{test_all}}.}
+\item{tests}{Which fuzz tests to run. Accepts a named list of inputs,
+defaulting to \code{\link{test_all}}.}
 }
 \value{
 A \code{fuzz_results} object.
@@ -22,6 +24,7 @@ A \code{fuzz_results} object.
 Fuzz-test a function
 }
 \seealso{
-\code{\link{as.data.frame.fuzz_results}} and \code{\link{value_returned}} to access fuzz test results.
+\code{\link{as.data.frame.fuzz_results}} and
+  \code{\link{value_returned}} to access fuzz test results.
 }
 

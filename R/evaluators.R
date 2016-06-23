@@ -4,12 +4,15 @@
 #'
 #' @param fun A function, either bare or quoted.
 #' @param arg_name Quoted name of the argument to fuzz test.
-#' @param ... Other non-dynamic values to pass to \code{fun}.
-#' @param tests Which fuzz tests to run. Accepts a named list of inputs, defaulting to \code{\link{test_all}}.
+#' @param ... Other non-dynamic arguments to pass to \code{fun}. These will be
+#'   repeated for every one of the \code{tests}.
+#' @param tests Which fuzz tests to run. Accepts a named list of inputs,
+#'   defaulting to \code{\link{test_all}}.
 #'
 #' @return A \code{fuzz_results} object.
 #'
-#' @seealso \code{\link{as.data.frame.fuzz_results}} and \code{\link{value_returned}} to access fuzz test results.
+#' @seealso \code{\link{as.data.frame.fuzz_results}} and
+#'   \code{\link{value_returned}} to access fuzz test results.
 #'
 #' @export
 fuzz_function <- function(fun, arg_name, ..., tests = test_all()) {
