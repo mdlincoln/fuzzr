@@ -44,7 +44,7 @@ fuzz_fun_arg <- function(fun, fun_name, arg, .dots, tests) {
   purrr::map(tests, function(x) {
     fun_arg <- stats::setNames(list(x), arg)
     all_args <- c(fun_arg, .dots)
-    try_fuzz(fun, fun_name, all_args)
+    try_fuzz(fun = fun, fun_name = fun_name, all_args = all_args)
   })
 }
 
