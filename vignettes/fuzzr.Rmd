@@ -45,9 +45,9 @@ fuzz_df <- as.data.frame(my_fuzz_results)
 knitr::kable(fuzz_df)
 ```
 
-Almost any of the unexpected values for `n` throw the farily generic warning `invalid 'times' argument`.
+Almost any of the unexpected values for `n` throw the farily generic warning `invalid 'times' argument`, which really comes from the `rep` function.
 Some types, like doubles, factors, and even dates (!) don't throw errors, but instead return a result.
-We can check the value of that result with `fuzz_value`
+We can check the value of that result with `fuzz_value()`, and the call originating it with `fuzz_call()`:
 
 ```{r}
 fuzz_call(my_fuzz_results, "dbl_single")
