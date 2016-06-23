@@ -32,9 +32,18 @@ as.data.frame.fuzz_results <- function(x, ..., delim = "; ", .id = "fuzz_input")
 #'   \code{\link{as.data.frame.fuzz_results}}.
 #'
 #' @export
-value_returned <- function(fr, index) {
+fuzz_value <- function(fr, index) {
+  assertthat::assert_that(inherits(fr, "fuzz_results"))
   assertthat::assert_that(assertthat::is.scalar(index))
   getElement(getElement(fr, index), "value")
+}
+
+#' @describeIn fuzz_value Access the call used for the fuzz test
+#' @export
+fuzz_call <- function(fr, index) {
+  assertthat::assert_that(inherits(fr, "fuzz_results"))
+  assertthat::assert_that(assertthat::is.scalar(index))
+  getElement(getElement(fr, index), "call")
 }
 
 # Internal functions ----

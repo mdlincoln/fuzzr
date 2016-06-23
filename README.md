@@ -30,7 +30,7 @@ You can render these results as a data frame:
 
 ``` r
 as.data.frame(fuzz_results)
-#> Source: local data frame [28 x 6]
+#> Source: local data frame [33 x 6]
 #> 
 #>             fuzz_input output messages warnings           errors
 #>                  (chr)  (chr)    (chr)    (chr)            (chr)
@@ -51,7 +51,7 @@ as.data.frame(fuzz_results)
 You can also access the value returned by any one test by calling the index or name of that test with `value_returned`:
 
 ``` r
-model <- value_returned(fuzz_results, "int_multiple")
+model <- fuzz_value(fuzz_results, "int_multiple")
 coefficients(model)
 #>  (Intercept)  Petal.Width Petal.Length 
 #>          0.8           NA          3.0

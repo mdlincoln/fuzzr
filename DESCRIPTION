@@ -14,4 +14,7 @@ Imports:
   assertthat,
   purrr
 Suggests:
-  testthat
+  testthat,
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

@@ -12,7 +12,7 @@
 #' @return A \code{fuzz_results} object.
 #'
 #' @seealso \code{\link{as.data.frame.fuzz_results}} and
-#'   \code{\link{value_returned}} to access fuzz test results.
+#'   \code{\link{fuzz_value}} to access fuzz test results.
 #'
 #' @export
 fuzz_function <- function(fun, arg_name, ..., tests = test_all()) {
@@ -47,7 +47,7 @@ fuzz_fun_arg <- function(fun, fun_name, arg, .dots, tests) {
   purrr::map(tests, function(x) {
     fun_arg <- stats::setNames(list(x), arg)
     all_args <- c(fun_arg, .dots)
-    try_fuzz(fun, fun_name, all_args)
+    try_fuzz(fun = fun, fun_name = fun_name, all_args = all_args)
   })
 }
 
@@ -91,6 +91,10 @@ try_fuzz <- function(fun, fun_name, all_args) {
       message = message_handler,
       warning = warning_handler
     )}, type = "output")
+
+  if(length(output) == 0) {
+    output <- NULL
+  }
 
   list(
     call = call,
