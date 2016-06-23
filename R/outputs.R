@@ -55,6 +55,7 @@ parse_fuzz_result_concat <- function(fr, sep) {
     }
   }, .at = c("output", "messages", "warnings", "errors"))
 
+  fr$call <- NULL
   fr$value <- NULL
   as.data.frame(fr, stringsAsFactors = FALSE)
 }

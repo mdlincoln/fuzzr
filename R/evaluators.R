@@ -18,7 +18,10 @@ fuzz_function <- function(fun, arg_name, ..., tests = test_all()) {
   # Retrieve the actual function if given a character name
   if(is.character(fun)) {
     assertthat::assert_that(assertthat::is.string(fun))
+    fun_name <- fun
     fun <- get(fun)
+  } else {
+    fun_name <- deparse(substitute(fun))
   }
 
   assertthat::assert_that(is.function(fun))
@@ -27,7 +30,7 @@ fuzz_function <- function(fun, arg_name, ..., tests = test_all()) {
   assertthat::assert_that(assertthat::has_args(fun, arg_name))
   assertthat::assert_that(assertthat::has_args(fun, names(.dots)))
 
-  fuzz_results <- fuzz_fun_arg(fun = fun, arg = arg_name, .dots = .dots, tests = tests)
+  fuzz_results <- fuzz_fun_arg(fun = fun, fun_name = fun_name, arg = arg_name, .dots = .dots, tests = tests)
 
   compose_results(fuzz_results)
 }
@@ -37,17 +40,20 @@ fuzz_function <- function(fun, arg_name, ..., tests = test_all()) {
 
 # Map a series of tests along a function argument, returning a list of results
 # (and/or conditions) named after the fuzz test.
-fuzz_fun_arg <- function(fun, arg, .dots, tests) {
+fuzz_fun_arg <- function(fun, fun_name, arg, .dots, tests) {
   purrr::map(tests, function(x) {
     fun_arg <- stats::setNames(list(x), arg)
-    try_fuzz(do.call(fun, args = c(fun_arg, .dots)))
+    all_args <- c(fun_arg, .dots)
+    try_fuzz(fun, fun_name, all_args)
   })
 }
 
 # Custom tryCatch/withCallingHandlers function to catch messages, warnings, and
 # errors along with any values returned by the expression. Returns a list of
 # value, messages, warnings, and errors.
-try_fuzz <- function(expr) {
+try_fuzz <- function(fun, fun_name, all_args) {
+
+  call <- list(fun = fun_name, args = all_args)
   messages <- NULL
   output <- NULL
   warnings <- NULL
@@ -78,12 +84,13 @@ try_fuzz <- function(expr) {
 
   output <- utils::capture.output({
     value <- withCallingHandlers(
-      tryCatch(expr, error = error_handler),
+      tryCatch(do.call(fun, args = all_args), error = error_handler),
       message = message_handler,
       warning = warning_handler
     )}, type = "output")
 
   list(
+    call = call,
     value = value,
     output = output,
     messages = messages,
