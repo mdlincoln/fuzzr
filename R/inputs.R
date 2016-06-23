@@ -36,9 +36,9 @@ test_int <- function() {
 test_dbl <- function() {
   list(
     dbl_empty = double(),
-    dbl_single = stats::runif(1),
-    dbl_mutliple = stats::runif(3),
-    dbl_with_na = c(stats::runif(2), NA)
+    dbl_single = 1.5,
+    dbl_mutliple = 1:3 + 0.5,
+    dbl_with_na = c(1:2 + 0.5, NA)
   )
 }
 
