@@ -74,3 +74,19 @@ fuzz_df_2 <- as.data.frame(fuzz_function(my_function_2, "n", x = "fuzz",
 
 knitr::kable(fuzz_df_2)
 ```
+
+## Fuzzing multiple arguments
+
+`fuzz_function` works by mapping several test inputs over one argument of a function while keeping the other arguments static.
+We can test the interaction between multiple arguments by mapping over different combinations of tests using [purrr](https://cran.r-project.org/package=purrr), and then combining those results into a data frame.
+
+```{r}
+library(purrr)
+
+test_all() %>% 
+  # Run fuzz_function once for each different value of "n"
+  map(function(n) fuzz_function(my_function_2, "x", n = n)) %>% 
+  # .id in as.data.frame() sets the column name for the value of "x"
+  # .id in map_df() sets the column name for the value of "n"
+  map_df(function(x) as.data.frame(x, .id = "x"), .id = "n")
+```
