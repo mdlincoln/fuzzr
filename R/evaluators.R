@@ -9,7 +9,7 @@
 #'
 #' @return A \code{fuzz_results} object.
 #'
-#' @seealso \code{\link{as.data.frame.fuzz_results}} and \code{\link{value_returned}} to access fuzz test results.
+#' @seealso \code{\link{as.data.frame.fuzz_results}} and \code{\link{fuzz_value}} to access fuzz test results.
 #'
 #' @export
 fuzz_function <- function(fun, arg_name, ..., tests = test_all()) {

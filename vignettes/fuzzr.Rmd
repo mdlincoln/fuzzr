@@ -11,24 +11,65 @@ vignette: >
 
 R's type-leniency is a blessing and a curse.
 This means it is up to the programmer to judge (or not) which inputs should be accepted, and which should throw errors.
+fuzzr helps you to check how cleanly and informatively your function responds to unexpected input.
 
-fuzzr helps you to 
+Say we build a function that takes a single string and a single integer, repeats the string that number of times, and pastes it together using a given delimiter:
 
 ```{r}
+my_function <- function(x, n, delim = " - ") {
+  paste(rep(x, n), collapse = delim)
+}
+
+my_function("fuzz", 7)
+```
+
+Simple enough.
+However, this function quickly breaks if we pass in somewhat unexpected values:
+
+```{r, error = TRUE}
+my_function("fuzz", "bar")
+```
+
+Let's test this with a full battery of fuzz tests:
+
+```{r, results = "asis"}
 library(fuzzr)
-library(ulanr)
+# Note that, while we are specifically fuzz testing the 'n' argument, we still 
+# need to provide an 'x' argument to pass along to my_function(). We do not have
+# to supply a delimiter, as my_function() declares a default value for this
+# argument.
+my_fuzz_results <- fuzz_function(my_function, "n", x = "fuzz", tests = test_all())
 
-ulan_name <- fuzz_function(ulan_data, "names")
-as.data.frame(ulan_name)
+# Produce a data frame summary of the results
+fuzz_df <- as.data.frame(my_fuzz_results)
+knitr::kable(fuzz_df)
 ```
 
-
+Almost any of the unexpected values for `n` throw the farily generic warning `invalid 'times' argument`.
+Some types, like doubles, factors, and even dates (!) don't throw errors, but instead return a result.
+We can check the value of that result with `fuzz_value`
 
 ```{r}
-library(purrr)
+fuzz_call(my_fuzz_results, "dbl_single")
+fuzz_value(my_fuzz_results, "dbl_single")
 
-args(ulan_data)
-
-ulan_args <- set_names(list("early_year", "late_year", "strictly_between", "method", "max_results")) %>% 
-  map_df(function(x) as.data.frame(fuzz_function(ulan_data, x, names = c("Rembrandt van Rijn", "Vincent van Gogh"))), .id = "arg_name")
+fuzz_call(my_fuzz_results, "date_single")
+# Hm, dates can be coerced into very large integers. Let's see how long this
+# result is.
+nchar(fuzz_value(my_fuzz_results, "date_single"))
+# Oh dear.
 ```
+
+Perhaps we might chose to enforce this with a tailored type check and error message. We will abbreviate this check by only testing against double values and date values:
+
+```{r, results = "asis"}
+my_function_2 <- function(x, n, delim = " - ") {
+  assertthat::assert_that(assertthat::is.count(n))
+  paste(rep(x, n), collapse = delim)
+}
+
+fuzz_df_2 <- as.data.frame(fuzz_function(my_function_2, "n", x = "fuzz", tests = c(test_dbl(), test_date())))
+knitr::kable(fuzz_df_2)
+```
+
+## Map `fuzz_function` with many arguments

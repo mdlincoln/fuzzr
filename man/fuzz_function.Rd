@@ -22,6 +22,6 @@ A \code{fuzz_results} object.
 Fuzz-test a function
 }
 \seealso{
-\code{\link{as.data.frame.fuzz_results}} and \code{\link{value_returned}} to access fuzz test results.
+\code{\link{as.data.frame.fuzz_results}} and \code{\link{fuzz_value}} to access fuzz test results.
 }
 
