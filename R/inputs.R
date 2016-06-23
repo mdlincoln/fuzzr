@@ -4,7 +4,7 @@
 #' @export
 test_all <- function() {
   c(test_char(), test_int(), test_dbl(), test_fctr(), test_lgl(), test_date(),
-    test_raw())
+    test_raw(), test_df())
 }
 
 #' @describeIn test_all Character vectors
@@ -84,3 +84,19 @@ test_raw <- function() {
   )
 }
 
+#' @describeIn test_all Data frames
+#' @export
+test_df <- function() {
+  iris_na <- datasets::iris
+  iris_na[c(1, 10, 100), 1] <- NA
+  iris_na[c(5, 15, 150), 3] <- NA
+  iris_na[c(7, 27, 75), 5] <- NA
+
+  list(
+    df_complete = datasets::iris,
+    df_empty = data.frame(NULL),
+    df_one_row = datasets::iris[1, ],
+    df_one_col = datasets::iris[ ,1],
+    df_with_na = iris_na
+  )
+}

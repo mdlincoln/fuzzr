@@ -5,6 +5,7 @@
 \alias{test_char}
 \alias{test_date}
 \alias{test_dbl}
+\alias{test_df}
 \alias{test_fctr}
 \alias{test_int}
 \alias{test_lgl}
@@ -26,6 +27,8 @@ test_fctr()
 test_date()
 
 test_raw()
+
+test_df()
 }
 \description{
 Fuzz test inputs
@@ -45,5 +48,7 @@ Fuzz test inputs
 \item \code{test_date}: Date vectors
 
 \item \code{test_raw}: Raw vectors
+
+\item \code{test_df}: Data frames
 }}
 
