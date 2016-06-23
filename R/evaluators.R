@@ -89,6 +89,10 @@ try_fuzz <- function(fun, fun_name, all_args) {
       warning = warning_handler
     )}, type = "output")
 
+  if(length(output) == 0) {
+    output <- NULL
+  }
+
   list(
     call = call,
     value = value,
