@@ -26,7 +26,7 @@ my_function("fuzz", 7)
 Simple enough.
 However, this function quickly breaks if we pass in somewhat unexpected values:
 
-```{r, error = TRUE}
+```{r, error = TRUE, purl = FALSE}
 my_function("fuzz", "bar")
 ```
 
