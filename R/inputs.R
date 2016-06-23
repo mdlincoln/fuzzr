@@ -12,11 +12,11 @@ test_all <- function() {
 test_char <- function() {
   list(
     char_empty = character(),
-    char_single = c("a"),
+    char_single = letters[1],
     char_single_blank = "",
-    char_multiple = c("a", "b", "c"),
-    char_multiple_blank = c("a", "b", "c", ""),
-    char_with_na = c("a", "b", NA)
+    char_multiple = letters[1:3],
+    char_multiple_blank = c(letters[1:3], ""),
+    char_with_na = c(letters[1:2], NA)
   )
 }
 
@@ -26,8 +26,8 @@ test_int <- function() {
   list(
     int_empty = integer(),
     int_single = 1L,
-    int_multiple = 1:3,
-    int_with_na = c(1:2, NA)
+    int_multiple = 1L:3L,
+    int_with_na = c(1L:2L, NA)
   )
 }
 
