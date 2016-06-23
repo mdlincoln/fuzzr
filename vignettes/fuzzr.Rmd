@@ -60,7 +60,7 @@ nchar(fuzz_value(my_fuzz_results, "date_single"))
 # Oh dear.
 ```
 
-Perhaps we might chose to enforce this with a tailored type check and error message. We will abbreviate this check by only testing against double values and date values:
+Perhaps we might chose to enforce this with a tailored type check (using [assertthat](https://cran.r-project.org/package=assertthat) that catches unexpected values and produces a more informative error message. 
 
 ```{r, results = "asis"}
 my_function_2 <- function(x, n, delim = " - ") {
@@ -68,8 +68,9 @@ my_function_2 <- function(x, n, delim = " - ") {
   paste(rep(x, n), collapse = delim)
 }
 
-fuzz_df_2 <- as.data.frame(fuzz_function(my_function_2, "n", x = "fuzz", tests = c(test_dbl(), test_date())))
+# We will abbreviate this check by only testing against double and date vectors
+fuzz_df_2 <- as.data.frame(fuzz_function(my_function_2, "n", x = "fuzz", 
+                                         tests = c(test_dbl(), test_date())))
+
 knitr::kable(fuzz_df_2)
 ```
-
-## Map `fuzz_function` with many arguments
