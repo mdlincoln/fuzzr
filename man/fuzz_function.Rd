@@ -33,6 +33,8 @@ to \code{\link[tidyr]{separate}} when
 \link[base]{regex} pattern. Therefore, using reserved regex characters may
 result in unexpected behavior.}
 
+\item{progress}{Show a progress bar while running tests?}
+
 \item{.l}{A named list of tests.}
 }
 \value{

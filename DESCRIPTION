@@ -12,10 +12,11 @@ LazyData: TRUE
 RoxygenNote: 5.0.1
 Imports:
   assertthat,
+  progress,
   purrr,
   tidyr
 Suggests:
   testthat,
-    knitr,
-    rmarkdown
+  knitr,
+  rmarkdown
 VignetteBuilder: knitr

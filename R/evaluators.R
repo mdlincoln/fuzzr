@@ -30,6 +30,7 @@
 #'   \code{link{as.data.frame.fuzz_results}} is called, which will treat it as a
 #'   \link[base]{regex} pattern. Therefore, using reserved regex characters may
 #'   result in unexpected behavior.
+#' @param progress Show a progress bar while running tests?
 #'
 #' @return A \code{fuzz_results} object.
 #'
