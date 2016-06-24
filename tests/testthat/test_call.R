@@ -1,9 +1,25 @@
+# test_all ----
+context("All test_ functions are valid")
+
+test_that("all test_ functions return a named list", {
+  pkgnames <- as.character(lsf.str("package:fuzzr"))
+  testnames <- setdiff(pkgnames[grep("test_", pkgnames)], "test_all")
+  alltestnames <- purrr::simplify(purrr::map(testnames, function(x) names(get(x)())))
+  purrr::walk(testnames, function(x) {
+    expect_true(purrr::is_list(get(x)()))
+    purrr::walk(x, function(y) is_named(y))
+    })
+
+  expect_true(all(alltestnames %in% names(test_all())))
+})
+
+# fuzz_function ----
 context("fuzz_function rejects poor inputs")
 
 test_that("Non-functions throw errors", {
-  expect_error(fuzz_function(fun = "non-function"))
-  expect_error(fuzz_funciton(fun = letters[1:3]))
-  expect_error(fuzz_funciton(fun = 1))
+  expect_error(fuzz_function(fun = "non-function"), regexp = "not a function")
+  expect_error(fuzz_function(fun = letters[1:3]), regexp = "not a function")
+  expect_error(fuzz_function(fun = 1), regexp = "not a function")
 })
 
 test_that("Unmatched arguments throw errors", {
@@ -12,16 +28,71 @@ test_that("Unmatched arguments throw errors", {
 })
 
 test_that("Invalid tests throw errors", {
-  expect_error(fuzz_function(lm, "data", tests = "nonlist"))
+  expect_error(fuzz_function(lm, "data", tests = "nonlist"), regexp = "is_list")
+  expect_error(fuzz_function(lm, "data", tests = list("nonlist")), regexp = "is not a named list value")
 })
 
-test_that("Built-in tests work properly", {
+# p_fuzz_function ----
+context("p_fuzz_function rejects poor inputs")
+
+test_that("Non-functions throw errors", {
+  expect_error(p_fuzz_function(fun = "non-function", "x"), regexp = "not a function")
+  expect_error(p_fuzz_function(fun = letters[1:3], "x"), regexp = "not a function")
+  expect_error(p_fuzz_function(fun = 1, "x"), regexp = "not a function")
+})
+
+test_that("Invalid tests throw errors", {
+  expect_error(p_fuzz_function(lm, .l = "data"), regexp = "is_list")
+  expect_error(p_fuzz_function(lm, .l = list("data")), regexp = "is not a named list value")
+  expect_error(p_fuzz_function(lm, .l = list(data = "y")), regexp = "is not a named list value")
+  expect_error(p_fuzz_function(lm, .l = list(data = list(y = iris), formula = Sepal.Width ~ .)), regexp = "is not a named list value")
+  expect_s3_class(p_fuzz_function(lm, .l = list(data = list(y = iris))), "fuzz_results")
+})
+
+# fuzz_results ----
+context("fuzz_function results can be parsed")
+
+lm_fuzz <- fuzz_function(lm, "subset", data = iris, formula = Sepal.Length ~ Sepal.Width)
+
+test_that("as.data.frame.fuzz_results", {
+  expect_s3_class(lm_fuzz, "fuzz_results")
+  expect_s3_class(as.data.frame(lm_fuzz), "data.frame")
+})
+
+test_that("data frame has correct names", {
   expect_equivalent(as.data.frame(fuzz_function(agrep, "pattern", x = letters, tests = test_char()))$pattern, names(test_char()))
+  expect_equivalent(names(as.data.frame(p_fuzz_function(agrep, list(pattern = test_all(), x = test_all())))), c("pattern", "x", "output", "messages", "warnings", "errors", "result_classes"))
 })
 
-test_that("test_all contains every individual test_ function", {
-  pkgnames <- as.character(lsf.str("package:fuzzr"))
-  testnames <- setdiff(pkgnames[grep("test_", pkgnames)], "test_all")
-  alltestnames <- purrr::simplify(purrr::map(testnames, function(x) names(get(x)())))
-  expect_true(all(alltestnames %in% names(test_all())))
+test_that("Values can be extracted from a fuzz_results object", {
+  expect_null(fuzz_value(lm_fuzz, 1))
+})
+
+test_that("Multi-class returns can be handled appropriately", {
+  mf <- function(x) {
+    r <- x
+    class(r) <- c("a", "b", "c")
+    print("output 1")
+    warning("warn 1")
+    message("mess 1")
+    print("output 2")
+    warning("warn 2")
+    message("mess 2")
+    if(x == 1) stop("Error at 1")
+    return(r)
+  }
+
+  fmf <- fuzz_function(mf, "x")
+  fdf <- as.data.frame(fmf)
+  cdf <- as.data.frame(fmf, sep = "|")
+
+  expect_true(is.character(fdf$x))
+  expect_true(is.character(fdf$output))
+  expect_true(is.character(fdf$messages))
+  expect_true(is.character(fdf$warnings))
+  expect_true(is.character(fdf$errors))
+  expect_true(is.character(fdf$result_classes))
+  expect_match(fdf[fdf$x == "int_single", ]$errors, "Error at 1")
+  expect_match(fdf[fdf$x == "char_multiple", ]$warnings, "condition has length > 1")
+  expect_match(fdf$messages[1], "|")
 })
