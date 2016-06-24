@@ -12,7 +12,7 @@
 #' tests to run on each argument, and will evaluate every combination of
 #' argument and provided test.
 #'
-#' @param fun A function, either bare or quoted.
+#' @param fun A function.
 #' @param arg_name Quoted name of the argument to fuzz test.
 #' @param ... Other non-dynamic arguments to pass to \code{fun}. These will be
 #'   repeated for every one of the \code{tests}.
@@ -48,8 +48,7 @@ fuzz_function <- function(fun, arg_name, ..., tests = test_all(), check_args = T
   .dots = list(...)
   dots_call_names <- dots_call_names[names(.dots)]
 
-  # Retrieve the actual function if given a character name
-  fun_info <- resolve_fun(fun)
+  assertthat::assert_that(is.function(fun))
 
   # Check that arg_name is a string, and the tests passed is a named list
   assertthat::assert_that(assertthat::is.string(arg_name),
@@ -58,8 +57,8 @@ fuzz_function <- function(fun, arg_name, ..., tests = test_all(), check_args = T
   # Check that arguments passed to fun actually exist in fun
   if(check_args)
     assertthat::assert_that(
-      assertthat::has_args(fun_info$fun, arg_name),
-      assertthat::has_args(fun_info$fun, names(.dots)))
+      assertthat::has_args(fun, arg_name),
+      assertthat::has_args(fun, names(.dots)))
 
   # Construct a list of arguments for p_fuzz_function, with tests assigned to
   # arg_name, and the values passed via ... saved as lists named after their
@@ -80,22 +79,21 @@ fuzz_function <- function(fun, arg_name, ..., tests = test_all(), check_args = T
 #'    formula = list(all_vars = Sepal.Length ~ ., one_var = mpg ~ .))
 #' p_fuzz_function(lm, test_args)
 p_fuzz_function <- function(fun, .l, check_args = TRUE, test_delim = ";") {
-  # Resolve function information
-  fun_info <- resolve_fun(fun)
+  assertthat::assert_that(is.function(fun))
+  fun_name <- deparse(substitute(fun))
 
   if(check_args)
-    assertthat::assert_that(assertthat::has_args(fun_info$fun, names(.l)))
+    assertthat::assert_that(assertthat::has_args(fun, names(.l)))
 
   # Ensure .l is a list of named lists
   is_named_list(.l)
 
   # Generate the list of tests to be done
   test_list <- named_cross_n(.l, delim = test_delim)
-  message(paste("Running", length(test_list), "tests..."))
 
   # Run tests
-  fr <- purrr::map(test_list, function(x) try_fuzz(fun = fun_info$fun,
-                                      fun_name = fun_info$name, all_args = x))
+  fr <- purrr::map(test_list, function(x) try_fuzz(fun = fun,
+                                      fun_name = fun_name, all_args = x))
   compose_results(fr, test_delim = test_delim)
 }
 
@@ -114,22 +112,6 @@ is_named <- function(x) {
 
 assertthat::on_failure(is_named) <- function(call, env) {
   paste0(deparse(call$x), " is not a named list value.")
-}
-
-# Takes either a function or its quoted name, and returns a list with both
-resolve_fun <- function(x) {
-  if(is.function(x)) {
-    fun <- x
-    name <- deparse(substitute(x))
-  } else if(is.character(x)) {
-    assertthat::assert_that(assertthat::is.string(x))
-    name <- x
-    fun <- get(x)
-  } else {
-    stop(x, " is neither a function nor a function name.")
-  }
-
-  list(fun = fun, name = name)
 }
 
 # A version of purrr::cross_n that produces top-level names by combining the

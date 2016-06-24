@@ -11,7 +11,7 @@ fuzz_function(fun, arg_name, ..., tests = test_all(), check_args = TRUE,
 p_fuzz_function(fun, .l, check_args = TRUE, test_delim = ";")
 }
 \arguments{
-\item{fun}{A function, either bare or quoted.}
+\item{fun}{A function.}
 
 \item{arg_name}{Quoted name of the argument to fuzz test.}
 

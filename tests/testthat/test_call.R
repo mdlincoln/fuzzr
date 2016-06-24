@@ -19,10 +19,6 @@ test_that("Built-in tests work properly", {
   expect_equivalent(as.data.frame(fuzz_function(agrep, "pattern", x = letters, tests = test_char()))$pattern, names(test_char()))
 })
 
-test_that("Both bare and quoted function names work", {
-  expect_equivalent(fuzz_function(lm, "subset", data = iris, formula = Sepal.Length ~ Sepal.Width), fuzz_function("lm", "subset", data = iris, formula = Sepal.Length ~ Sepal.Width))
-})
-
 test_that("test_all contains every individual test_ function", {
   pkgnames <- as.character(lsf.str("package:fuzzr"))
   testnames <- setdiff(pkgnames[grep("test_", pkgnames)], "test_all")
