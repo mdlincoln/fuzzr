@@ -29,35 +29,64 @@ fuzz_results <- fuzz_function(fun = lm, arg_name = "subset", data = iris,
 You can render these results as a data frame:
 
 ``` r
-as.data.frame(fuzz_results)
-#> Source: local data frame [33 x 6]
+fuzz_df <- as.data.frame(fuzz_results)
+dplyr::as_data_frame(fuzz_df)
+#> Source: local data frame [33 x 8]
 #> 
-#>             fuzz_input output messages warnings           errors
-#>                  (chr)  (chr)    (chr)    (chr)            (chr)
-#> 1           char_empty              NA       NA 0 (non-NA) cases
-#> 2          char_single              NA       NA 0 (non-NA) cases
-#> 3    char_single_blank              NA       NA 0 (non-NA) cases
-#> 4        char_multiple              NA       NA 0 (non-NA) cases
-#> 5  char_multiple_blank              NA       NA 0 (non-NA) cases
-#> 6         char_with_na              NA       NA 0 (non-NA) cases
-#> 7            int_empty              NA       NA 0 (non-NA) cases
-#> 8           int_single              NA       NA               NA
-#> 9         int_multiple              NA       NA               NA
-#> 10         int_with_na              NA       NA               NA
-#> ..                 ...    ...      ...      ...              ...
-#> Variables not shown: result_classes (chr)
+#>                 subset  data                                   formula
+#>                  <chr> <chr>                                     <chr>
+#> 1           char_empty  iris Sepal.Length ~ Petal.Width + Petal.Length
+#> 2          char_single  iris Sepal.Length ~ Petal.Width + Petal.Length
+#> 3    char_single_blank  iris Sepal.Length ~ Petal.Width + Petal.Length
+#> 4        char_multiple  iris Sepal.Length ~ Petal.Width + Petal.Length
+#> 5  char_multiple_blank  iris Sepal.Length ~ Petal.Width + Petal.Length
+#> 6         char_with_na  iris Sepal.Length ~ Petal.Width + Petal.Length
+#> 7            int_empty  iris Sepal.Length ~ Petal.Width + Petal.Length
+#> 8           int_single  iris Sepal.Length ~ Petal.Width + Petal.Length
+#> 9         int_multiple  iris Sepal.Length ~ Petal.Width + Petal.Length
+#> 10         int_with_na  iris Sepal.Length ~ Petal.Width + Petal.Length
+#> ..                 ...   ...                                       ...
+#> Variables not shown: output <chr>, messages <chr>, warnings <chr>, errors
+#>   <chr>, result_classes <chr>.
 ```
 
-You can also access the value returned by any one test by calling the index or name of that test with `value_returned`:
+You can also access the value returned by any one test by calling the index that test with `value_returned`:
 
 ``` r
-model <- fuzz_value(fuzz_results, "int_multiple")
+model <- fuzz_value(fuzz_results, which.max(fuzz_df$subset == "int_multiple"))
 coefficients(model)
 #>  (Intercept)  Petal.Width Petal.Length 
 #>          0.8           NA          3.0
 ```
 
-### Tests
+Multiple-argument tests
+-----------------------
+
+Specify multiple-argument tests with `p_fuzz_function`, passing a named list of arguments and tests to run on each. `p_fuzz_function` will test every combination of argument and variable.
+
+``` r
+fuzz_p <- p_fuzz_function(agrep, list(pattern = test_char(), x = test_char()))
+dplyr::as_data_frame(as.data.frame(fuzz_p))
+#> Source: local data frame [36 x 7]
+#> 
+#>                pattern           x output messages
+#>                  <chr>       <chr>  <chr>    <chr>
+#> 1           char_empty  char_empty     NA       NA
+#> 2          char_single  char_empty     NA       NA
+#> 3    char_single_blank  char_empty     NA       NA
+#> 4        char_multiple  char_empty     NA       NA
+#> 5  char_multiple_blank  char_empty     NA       NA
+#> 6         char_with_na  char_empty     NA       NA
+#> 7           char_empty char_single     NA       NA
+#> 8          char_single char_single     NA       NA
+#> 9    char_single_blank char_single     NA       NA
+#> 10       char_multiple char_single     NA       NA
+#> ..                 ...         ...    ...      ...
+#> Variables not shown: warnings <chr>, errors <chr>, result_classes <chr>.
+```
+
+Tests
+-----
 
 Tests are set by passing functions that return named lists of input values. These values will be passed as function arguments. Several default suites are provided with this package, such as `test_char`, however you may implement your own by passing a function that returns a similarly-formatted list.
 
