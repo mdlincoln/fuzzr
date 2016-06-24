@@ -6,9 +6,10 @@
 \title{Fuzz-test a function}
 \usage{
 fuzz_function(fun, arg_name, ..., tests = test_all(), check_args = TRUE,
-  test_delim = ";")
+  test_delim = ";", progress = interactive())
 
-p_fuzz_function(fun, .l, check_args = TRUE, test_delim = ";")
+p_fuzz_function(fun, .l, check_args = TRUE, test_delim = ";",
+  progress = interactive())
 }
 \arguments{
 \item{fun}{A function.}
@@ -32,6 +33,8 @@ to \code{\link[tidyr]{separate}} when
 \link[base]{regex} pattern. Therefore, using reserved regex characters may
 result in unexpected behavior.}
 
+\item{progress}{Show a progress bar while running tests?}
+
 \item{.l}{A named list of tests.}
 }
 \value{
@@ -48,6 +51,10 @@ values of other required arguments, and a named list of test values.
 \code{p_fuzz_function} takes a nested list of arguments paired with lists of
 tests to run on each argument, and will evaluate every combination of
 argument and provided test.
+}
+\note{
+The user will be asked to confirm exectuing the function if the
+  combinations of potential tests exceeds 500,000.
 }
 \examples{
 # Evaluate the 'formula' argument of lm, passing additional required variables
