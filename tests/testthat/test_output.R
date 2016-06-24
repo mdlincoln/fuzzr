@@ -9,8 +9,6 @@ test_that("fuzz_function returns a data.frame object", {
 
 test_that("Values can be extracted from a fuzz_results object", {
   expect_null(fuzz_value(lm_fuzz, 1))
-  expect_null(fuzz_value(lm_fuzz, "char_single"))
-  expect_s3_class(fuzz_value(lm_fuzz, "int_single"), "lm")
 })
 
 test_that("Multi-class returns can be handled appropriately", {

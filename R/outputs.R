@@ -26,25 +26,28 @@ as.data.frame.fuzz_results <- function(x, ..., delim = "; ", .id = "fuzz_input")
   tidyr::separate_(df, col = .id, into = argnames, sep = attr(x, "test_delim"))
 }
 
-#' Access the object returned by the fuzz test
+#' Access individual fuzz test results
 #'
-#' @param fr fuzz_results object
-#' @param index The test index (by position), or name, whose results to access.
+#' @param fr \code{fuzz_results} object
+#' @param index The test index (by position) to access.
 #'   Same as the row number in the data frame returned by
 #'   \code{\link{as.data.frame.fuzz_results}}.
-#'
+#' @name fuzz_results
+NULL
+
+#' @describeIn fuzz_results Access the object returned by the fuzz test
 #' @export
 fuzz_value <- function(fr, index) {
   assertthat::assert_that(inherits(fr, "fuzz_results"))
-  assertthat::assert_that(assertthat::is.scalar(index))
+  assertthat::assert_that(assertthat::is.count(index))
   getElement(getElement(fr, index), "value")
 }
 
-#' @describeIn fuzz_value Access the call used for the fuzz test
+#' @describeIn fuzz_results Access the call used for the fuzz test
 #' @export
 fuzz_call <- function(fr, index) {
   assertthat::assert_that(inherits(fr, "fuzz_results"))
-  assertthat::assert_that(assertthat::is.scalar(index))
+  assertthat::assert_that(assertthat::is.count(index))
   getElement(getElement(fr, index), "call")
 }
 
