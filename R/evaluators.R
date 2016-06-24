@@ -12,6 +12,9 @@
 #' tests to run on each argument, and will evaluate every combination of
 #' argument and provided test.
 #'
+#' @note The user will be asked to confirm exectuing the function if the
+#'   combinations of potential tests exceeds 500,000.
+#'
 #' @param fun A function.
 #' @param arg_name Quoted name of the argument to fuzz test.
 #' @param ... Other non-dynamic arguments to pass to \code{fun}. These will be
@@ -40,15 +43,16 @@
 #'
 #' # When evaluating a function that takes ..., set check_args to FALSE
 #' fuzz_function(paste, "x", check_args = FALSE)
-fuzz_function <- function(fun, arg_name, ..., tests = test_all(), check_args = TRUE, test_delim = ";") {
+fuzz_function <- function(fun, arg_name, ..., tests = test_all(), check_args = TRUE, test_delim = ";", progress = interactive()) {
+
+  fuzz_asserts(fun, check_args, test_delim, progress)
+
   # Collect the unevaluated names of variables passed to the original call,
   # keeping only those passed in as ... These will be used in the named list
   # passed to p_fuzz_function
   dots_call_names <- purrr::map_chr(as.list(match.call()), deparse)
   .dots = list(...)
   dots_call_names <- dots_call_names[names(.dots)]
-
-  assertthat::assert_that(is.function(fun))
 
   # Check that arg_name is a string, and the tests passed is a named list
   assertthat::assert_that(assertthat::is.string(arg_name),
@@ -67,7 +71,7 @@ fuzz_function <- function(fun, arg_name, ..., tests = test_all(), check_args = T
     purrr::set_names(list(tests), arg_name),
     purrr::map2(.dots, dots_call_names, function(x, y) purrr::set_names(list(x), y)))
 
-  p_fuzz_function(fun, .l = test_args, check_args = check_args, test_delim = test_delim)
+  p_fuzz_function(fun, .l = test_args, check_args = check_args, test_delim = test_delim, progress = progress)
 }
 
 #' @rdname fuzz_function
@@ -78,8 +82,10 @@ fuzz_function <- function(fun, arg_name, ..., tests = test_all(), check_args = T
 #'    data = list(iris = iris, cars = mtcars),
 #'    formula = list(all_vars = Sepal.Length ~ ., one_var = mpg ~ .))
 #' p_fuzz_function(lm, test_args)
-p_fuzz_function <- function(fun, .l, check_args = TRUE, test_delim = ";") {
-  assertthat::assert_that(is.function(fun))
+p_fuzz_function <- function(fun, .l, check_args = TRUE, test_delim = ";", progress = interactive()) {
+
+  fuzz_asserts(fun, check_args, test_delim, progress)
+
   fun_name <- deparse(substitute(fun))
 
   if(check_args)
@@ -88,16 +94,46 @@ p_fuzz_function <- function(fun, .l, check_args = TRUE, test_delim = ";") {
   # Ensure .l is a list of named lists
   is_named_list(.l)
 
+  # Warn if combination of tests is potentially massive
+  num_tests <- purrr::reduce(purrr::map_int(.l, length), `*`)
+  if(num_tests >= 500000) {
+    m <- utils::menu(choices = c("Yes", "No"), title = paste("The supplied tests have", num_tests, "combinations, which may be prohibitively large to calculate. Attempt to proceed?"))
+    if(m != 1)
+      return(NULL)
+  }
+
   # Generate the list of tests to be done
   test_list <- named_cross_n(.l, delim = test_delim)
 
   # Run tests
-  fr <- purrr::map(test_list, function(x) try_fuzz(fun = fun,
-                                      fun_name = fun_name, all_args = x))
+  if(progress) {
+    pb <- progress::progress_bar$new(
+      format = "  running tests [:bar] :percent eta: :eta",
+      total = length(test_list), clear = FALSE, width= 60)
+    pb$tick(0)
+    fr <- purrr::map(
+      test_list, function(x) {
+        try_fuzz(fun = fun, fun_name = fun_name,
+                 all_args = x)
+        pb$tick()
+      })
+  } else {
+    fr <- purrr::map(test_list, function(x) {
+      try_fuzz(fun = fun, fun_name = fun_name, all_args = x)
+    })
+  }
+
   compose_results(fr, test_delim = test_delim)
 }
 
 # Internal functions ----
+
+# These assertions need to be checked for both functions
+fuzz_asserts <- function(fun, check_args, test_delim, progress) {
+  assertthat::assert_that(
+    is.function(fun), assertthat::is.flag(check_args),
+    assertthat::is.string(test_delim), assertthat::is.flag(progress))
+}
 
 is_named_list <- function(.l) {
   assertthat::assert_that(purrr::is_list(.l))

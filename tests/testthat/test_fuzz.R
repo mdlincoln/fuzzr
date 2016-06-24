@@ -49,6 +49,10 @@ test_that("Invalid tests throw errors", {
   expect_s3_class(p_fuzz_function(lm, .l = list(data = list(y = iris))), "fuzz_results")
 })
 
+test_that("Over-large test suites raise a menu", {
+  expect_error(p_fuzz_function(lm, .l = list(a = test_all(), b = test_all(), c = test_all(), d = test_all()), check_args = FALSE), regexp = "cannot be used non-interactively")
+})
+
 # fuzz_results ----
 context("fuzz_function results can be parsed")
 
