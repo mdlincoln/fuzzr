@@ -60,7 +60,7 @@ nchar(fuzz_value(my_fuzz_results, which.max(fuzz_df$n == "date_single")))
 # Oh dear.
 ```
 
-Perhaps we might chose to enforce this with a tailored type check (using [assertthat](https://cran.r-project.org/package=assertthat) that catches unexpected values and produces a more informative error message. 
+Perhaps we might chose to enforce this with a tailored type check (using [assertthat](https://cran.r-project.org/package=assertthat)) that catches unexpected values and produces a more informative error message. 
 
 ```{r, results = "asis"}
 my_function_2 <- function(x, n, delim = " - ") {
