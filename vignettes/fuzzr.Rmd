@@ -50,13 +50,13 @@ Some types, like doubles, factors, and even dates (!) don't throw errors, but in
 We can check the value of that result with `fuzz_value()`, and the call originating it with `fuzz_call()`:
 
 ```{r}
-fuzz_call(my_fuzz_results, "dbl_single")
-fuzz_value(my_fuzz_results, "dbl_single")
+fuzz_call(my_fuzz_results, which.max(fuzz_df$n == "dbl_single"))
+fuzz_value(my_fuzz_results, which.max(fuzz_df$n == "dbl_single"))
 
-fuzz_call(my_fuzz_results, "date_single")
+fuzz_call(my_fuzz_results, which.max(fuzz_df$n == "date_single"))
 # Hm, dates can be coerced into very large integers. Let's see how long this
 # result is.
-nchar(fuzz_value(my_fuzz_results, "date_single"))
+nchar(fuzz_value(my_fuzz_results, which.max(fuzz_df$n == "date_single")))
 # Oh dear.
 ```
 
