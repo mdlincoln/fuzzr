@@ -2,12 +2,31 @@
 
 #' Fuzz-test a function
 #'
+#' Evaluate how a function responds to unexpected or non-standard inputs.
+#'
+#' \code{fuzz_function} provides a simple interface to fuzz test a single
+#' argument of a function by passing the function, name of the argument, static
+#' values of other required arguments, and a named list of test values.
+#'
+#' \code{p_fuzz_function} takes a nested list of arguments paired with lists of
+#' tests to run on each argument, and will evaluate every combination of
+#' argument and provided test.
+#'
 #' @param fun A function, either bare or quoted.
 #' @param arg_name Quoted name of the argument to fuzz test.
 #' @param ... Other non-dynamic arguments to pass to \code{fun}. These will be
 #'   repeated for every one of the \code{tests}.
 #' @param tests Which fuzz tests to run. Accepts a named list of inputs,
 #'   defaulting to \code{\link{test_all}}.
+#' @param check_args Check if \code{arg_name} and any arguments passed as
+#'   \code{...} are accepted by \code{fun}. Set to \code{FALSE} if you need to
+#'   pass arguments to a function that itself accepts arguments via \code{...}.
+#' @param test_delim The delimter to use in separating argument names in the
+#'   named list of fuzz test combinations. Note that this value will be passed
+#'   to \code{\link[tidyr]{separate}} when
+#'   \code{link{as.data.frame.fuzz_results}} is called, which will treat it as a
+#'   \link[base]{regex} pattern. Therefore, using reserved regex characters may
+#'   result in unexpected behavior.
 #'
 #' @return A \code{fuzz_results} object.
 #'
@@ -15,40 +34,110 @@
 #'   \code{\link{fuzz_value}} to access fuzz test results.
 #'
 #' @export
-fuzz_function <- function(fun, arg_name, ..., tests = test_all()) {
+#' @examples
+#' # Evaluate the 'formula' argument of lm, passing additional required variables
+#' fuzz_function(lm, "formula", data = iris)
+#'
+#' # When evaluating a function that takes ..., set check_args to FALSE
+#' fuzz_function(paste, "x", check_args = FALSE)
+fuzz_function <- function(fun, arg_name, ..., tests = test_all(), check_args = TRUE, test_delim = ";") {
+  # Collect the unevaluated names of variables passed to the original call,
+  # keeping only those passed in as ... These will be used in the named list
+  # passed to p_fuzz_function
+  dots_call_names <- purrr::map_chr(as.list(match.call()), deparse)
   .dots = list(...)
+  dots_call_names <- dots_call_names[names(.dots)]
 
   # Retrieve the actual function if given a character name
-  if(is.character(fun)) {
-    assertthat::assert_that(assertthat::is.string(fun))
-    fun_name <- fun
-    fun <- get(fun)
-  } else {
-    fun_name <- deparse(substitute(fun))
-  }
+  fun_info <- resolve_fun(fun)
 
-  assertthat::assert_that(is.function(fun))
-  assertthat::assert_that(assertthat::is.string(arg_name))
-  assertthat::assert_that(is.list(tests))
-  assertthat::assert_that(assertthat::has_args(fun, arg_name))
-  assertthat::assert_that(assertthat::has_args(fun, names(.dots)))
+  # Check that arg_name is a string, and the tests passed is a named list
+  assertthat::assert_that(assertthat::is.string(arg_name),
+                          purrr::is_list(tests), is_named(tests))
 
-  fuzz_results <- fuzz_fun_arg(fun = fun, fun_name = fun_name, arg = arg_name, .dots = .dots, tests = tests)
+  # Check that arguments passed to fun actually exist in fun
+  if(check_args)
+    assertthat::assert_that(
+      assertthat::has_args(fun_info$fun, arg_name),
+      assertthat::has_args(fun_info$fun, names(.dots)))
 
-  compose_results(fuzz_results)
+  # Construct a list of arguments for p_fuzz_function, with tests assigned to
+  # arg_name, and the values passed via ... saved as lists named after their
+  # deparsed variable names.
+  test_args <- c(
+    purrr::set_names(list(tests), arg_name),
+    purrr::map2(.dots, dots_call_names, function(x, y) purrr::set_names(list(x), y)))
+
+  p_fuzz_function(fun, .l = test_args, check_args = check_args, test_delim = test_delim)
+}
+
+#' @rdname fuzz_function
+#' @param .l A named list of tests.
+#' @export
+#' @examples
+#' test_args <- list(
+#'    data = list(iris = iris, cars = mtcars),
+#'    formula = list(all_vars = Sepal.Length ~ ., one_var = mpg ~ .))
+#' p_fuzz_function(lm, test_args)
+p_fuzz_function <- function(fun, .l, check_args = TRUE, test_delim = ";") {
+  # Resolve function information
+  fun_info <- resolve_fun(fun)
+
+  if(check_args)
+    assertthat::assert_that(assertthat::has_args(fun_info$fun, names(.l)))
+
+  # Ensure .l is a list of named lists
+  is_named_list(.l)
+
+  # Generate the list of tests to be done
+  test_list <- named_cross_n(.l, delim = test_delim)
+  message(paste("Running", length(test_list), "tests..."))
+
+  # Run tests
+  fr <- purrr::map(test_list, function(x) try_fuzz(fun = fun_info$fun,
+                                      fun_name = fun_info$name, all_args = x))
+  compose_results(fr, test_delim = test_delim)
 }
 
 # Internal functions ----
 
+is_named_list <- function(.l) {
+  assertthat::assert_that(purrr::is_list(.l))
+  purrr::walk(.l, function(x) assertthat::assert_that(is_named(x)))
+  return(TRUE)
+}
 
-# Map a series of tests along a function argument, returning a list of results
-# (and/or conditions) named after the fuzz test.
-fuzz_fun_arg <- function(fun, fun_name, arg, .dots, tests) {
-  purrr::map(tests, function(x) {
-    fun_arg <- stats::setNames(list(x), arg)
-    all_args <- c(fun_arg, .dots)
-    try_fuzz(fun = fun, fun_name = fun_name, all_args = all_args)
-  })
+# Check that list contains named lists
+is_named <- function(x) {
+  !is.null(names(x))
+}
+
+assertthat::on_failure(is_named) <- function(call, env) {
+  paste0(deparse(call$x), " is not a named list value.")
+}
+
+# Takes either a function or its quoted name, and returns a list with both
+resolve_fun <- function(x) {
+  if(is.function(x)) {
+    fun <- x
+    name <- deparse(substitute(x))
+  } else if(is.character(x)) {
+    assertthat::assert_that(assertthat::is.string(x))
+    name <- x
+    fun <- get(x)
+  } else {
+    stop(x, " is neither a function nor a function name.")
+  }
+
+  list(fun = fun, name = name)
+}
+
+# A version of purrr::cross_n that produces top-level names by combining the
+# second-level names with a specified delimiter character.
+named_cross_n <- function(.l, delim, ...) {
+  .l_names <- purrr::map_chr(purrr::cross_n(purrr::map(.l, names)), paste,
+                             collapse = delim)
+  purrr::set_names(purrr::cross_n(.l, ...), .l_names)
 }
 
 # Custom tryCatch/withCallingHandlers function to catch messages, warnings, and

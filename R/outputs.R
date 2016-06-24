@@ -21,7 +21,9 @@
 #'
 #' @export
 as.data.frame.fuzz_results <- function(x, ..., delim = "; ", .id = "fuzz_input") {
-  purrr::map_df(x, parse_fuzz_result_concat, delim, .id = .id)
+  argnames <- names(x[[1]]$call$args)
+  df <- purrr::map_df(x, function(x) parse_fuzz_result_concat(x, delim = delim), .id = .id)
+  tidyr::separate_(df, col = .id, into = argnames, sep = attr(x, "test_delim"))
 }
 
 #' Access the object returned by the fuzz test
@@ -48,19 +50,21 @@ fuzz_call <- function(fr, index) {
 
 # Internal functions ----
 
-compose_results <- function(fr) {
-  structure(fr, class = "fuzz_results")
+compose_results <- function(fr, test_delim) {
+  fr <- structure(fr, class = "fuzz_results")
+  attr(fr, "test_delim") <- test_delim
+  return(fr)
 }
 
-parse_fuzz_result_concat <- function(fr, sep) {
+parse_fuzz_result_concat <- function(fr, delim) {
   fr$result_classes <- ifelse(is.null(fr$value), as.character(NA),
-                              paste(class(fr$value), collapse = sep))
+                              paste(class(fr$value), collapse = delim))
 
   fr <- purrr::map_at(fr, function(x) {
     if(is.null(x)) {
       return(as.character(NA))
     } else {
-      paste(x, collapse = sep)
+      paste(x, collapse = delim)
     }
   }, .at = c("output", "messages", "warnings", "errors"))
 

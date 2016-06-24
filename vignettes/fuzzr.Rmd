@@ -38,7 +38,7 @@ library(fuzzr)
 # need to provide an 'x' argument to pass along to my_function(). We do not have
 # to supply a delimiter, as my_function() declares a default value for this
 # argument.
-my_fuzz_results <- fuzz_function(my_function, "n", x = "fuzz", tests = test_all())
+my_fuzz_results <- fuzz_function(my_function, "n", x = 1:3, tests = test_all(), test_delim = ";")
 
 # Produce a data frame summary of the results
 fuzz_df <- as.data.frame(my_fuzz_results)
@@ -78,15 +78,22 @@ knitr::kable(fuzz_df_2)
 ## Fuzzing multiple arguments
 
 `fuzz_function` works by mapping several test inputs over one argument of a function while keeping the other arguments static.
-We can test the interaction between multiple arguments by mapping over different combinations of tests using [purrr](https://cran.r-project.org/package=purrr), and then combining those results into a data frame.
+`p_fuzz_function` lets you specify a battery of tests for each variable, and then runs every combination of test.
+This takes a named list of arguments and the tests to be run on them. These tests can be specified using the provided functions like `test_char`, or with variable inputs you provide.
+Remember that each test condition must, itself, be named.
 
-```{r}
-library(purrr)
+```{r, results = 'asis'}
+p_args <- list(
+  x = list(
+    simple_char = "test",
+    numbers = 1:3
+  ),
+  n = test_all(),
+  delim = test_all())
 
-test_all() %>% 
-  # Run fuzz_function once for each different value of "n"
-  map(function(n) fuzz_function(my_function_2, "x", n = n)) %>% 
-  # .id in as.data.frame() sets the column name for the value of "x"
-  # .id in map_df() sets the column name for the value of "n"
-  map_df(function(x) as.data.frame(x, .id = "x"), .id = "n")
+pr <- p_fuzz_function(my_function_2, p_args)
+prdf <- as.data.frame(pr)
+
+knitr::kable(head(prdf))
 ```
+

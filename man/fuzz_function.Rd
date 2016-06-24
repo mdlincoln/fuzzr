@@ -2,9 +2,13 @@
 % Please edit documentation in R/evaluators.R
 \name{fuzz_function}
 \alias{fuzz_function}
+\alias{p_fuzz_function}
 \title{Fuzz-test a function}
 \usage{
-fuzz_function(fun, arg_name, ..., tests = test_all())
+fuzz_function(fun, arg_name, ..., tests = test_all(), check_args = TRUE,
+  test_delim = ";")
+
+p_fuzz_function(fun, .l, check_args = TRUE, test_delim = ";")
 }
 \arguments{
 \item{fun}{A function, either bare or quoted.}
@@ -16,12 +20,45 @@ repeated for every one of the \code{tests}.}
 
 \item{tests}{Which fuzz tests to run. Accepts a named list of inputs,
 defaulting to \code{\link{test_all}}.}
+
+\item{check_args}{Check if \code{arg_name} and any arguments passed as
+\code{...} are accepted by \code{fun}. Set to \code{FALSE} if you need to
+pass arguments to a function that itself accepts arguments via \code{...}.}
+
+\item{test_delim}{The delimter to use in separating argument names in the
+named list of fuzz test combinations. Note that this value will be passed
+to \code{\link[tidyr]{separate}} when
+\code{link{as.data.frame.fuzz_results}} is called, which will treat it as a
+\link[base]{regex} pattern. Therefore, using reserved regex characters may
+result in unexpected behavior.}
+
+\item{.l}{A named list of tests.}
 }
 \value{
 A \code{fuzz_results} object.
 }
 \description{
-Fuzz-test a function
+Evaluate how a function responds to unexpected or non-standard inputs.
+}
+\details{
+\code{fuzz_function} provides a simple interface to fuzz test a single
+argument of a function by passing the function, name of the argument, static
+values of other required arguments, and a named list of test values.
+
+\code{p_fuzz_function} takes a nested list of arguments paired with lists of
+tests to run on each argument, and will evaluate every combination of
+argument and provided test.
+}
+\examples{
+# Evaluate the 'formula' argument of lm, passing additional required variables
+fuzz_function(lm, "formula", data = iris)
+
+# When evaluating a function that takes ..., set check_args to FALSE
+fuzz_function(paste, "x", check_args = FALSE)
+test_args <- list(
+   data = list(iris = iris, cars = mtcars),
+   formula = list(all_vars = Sepal.Length ~ ., one_var = mpg ~ .))
+p_fuzz_function(lm, test_args)
 }
 \seealso{
 \code{\link{as.data.frame.fuzz_results}} and

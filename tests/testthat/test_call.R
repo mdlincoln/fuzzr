@@ -16,7 +16,7 @@ test_that("Invalid tests throw errors", {
 })
 
 test_that("Built-in tests work properly", {
-  expect_equivalent(as.data.frame(fuzz_function(agrep, "pattern", x = letters, tests = test_char()))$fuzz_input, names(test_char()))
+  expect_equivalent(as.data.frame(fuzz_function(agrep, "pattern", x = letters, tests = test_char()))$pattern, names(test_char()))
 })
 
 test_that("Both bare and quoted function names work", {
