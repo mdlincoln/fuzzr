@@ -50,12 +50,12 @@ Some types, like doubles, factors, and even dates (!) don't throw errors, but in
 We can check the value of that result with `fuzz_value()`, and the call originating it with `fuzz_call()`:
 
 ```{r}
-dbl_single_index <- fuzz_df[fuzz_df$n == "dbl_single", "results_index"]
+dbl_single_index <- fuzz_df[fuzz_df$n == "dbl_single", ]$results_index
 
 fuzz_call(my_fuzz_results, dbl_single_index)
 fuzz_value(my_fuzz_results, dbl_single_index)
 
-date_single_index <- fuzz_df[fuzz_df$n == "date_single", "results_index"]
+date_single_index <- fuzz_df[fuzz_df$n == "date_single", ]$results_index
 
 fuzz_call(my_fuzz_results, date_single_index)
 # Hm, dates can be coerced into very large integers. Let's see how long this

@@ -72,8 +72,8 @@ test_that("data frame has correct names", {
 })
 
 test_that("Values can be extracted from a fuzz_results object", {
-  char_empty_index <- lm_df[lm_df$subset == "char_empty", "results_index"]
-  int_single_index <- lm_df[lm_df$subset == "int_single", "results_index"]
+  char_empty_index <- lm_df[lm_df$subset == "char_empty", ]$results_index
+  int_single_index <- lm_df[lm_df$subset == "int_single", ]$results_index
 
   lm_1_val <- fuzz_value(lm_fuzz, char_empty_index)
   lm_1_call <- fuzz_call(lm_fuzz, char_empty_index)
