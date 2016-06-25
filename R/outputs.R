@@ -17,6 +17,8 @@
 #'   \item{\code{errors}}{Error returned, if applicable.}
 #'   \item{\code{value_classes}}{Delimited classes of the object returned by the
 #'    function, if applicable}
+#'   \item{\code{results_index}}{Index of \code{x} from which the summary was
+#'    produced.}
 #'   }
 #'
 #' @export
