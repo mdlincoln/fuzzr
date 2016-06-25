@@ -114,9 +114,9 @@ p_fuzz_function <- function(fun, .l, check_args = TRUE, test_delim = ";", progre
     pb$tick(0)
     fr <- purrr::map(
       test_list, function(x) {
+        pb$tick()
         try_fuzz(fun = fun, fun_name = fun_name,
                  all_args = x)
-        pb$tick()
       })
   } else {
     fr <- purrr::map(test_list, function(x) {
