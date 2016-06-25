@@ -59,10 +59,11 @@ test_that("Over-large test suites raise a menu", {
 context("fuzz_function results can be parsed")
 
 lm_fuzz <- fuzz_function(lm, "subset", data = iris, formula = Sepal.Length ~ Sepal.Width)
+lm_df <- as.data.frame(lm_fuzz)
 
 test_that("as.data.frame.fuzz_results", {
   expect_s3_class(lm_fuzz, "fuzz_results")
-  expect_s3_class(as.data.frame(lm_fuzz), "data.frame")
+  expect_s3_class(lm_df, "data.frame")
 })
 
 test_that("data frame has correct names", {
@@ -71,7 +72,17 @@ test_that("data frame has correct names", {
 })
 
 test_that("Values can be extracted from a fuzz_results object", {
-  expect_null(fuzz_value(lm_fuzz, 1))
+  lm_1_val <- fuzz_value(lm_fuzz, lm_df[lm_df$subset == "char_empty", "results_index"])
+  lm_1_call <- fuzz_call(lm_fuzz, lm_df[lm_df$subset == "char_empty", "results_index"])
+  lm_single_val <- fuzz_value(lm_fuzz, lm_df[lm_df$subset == "int_single", "results_index"])
+  lm_single_call <- fuzz_call(lm_fuzz, lm_df[lm_df$subset == "int_single", "results_index"])
+
+  expect_null(lm_1_val)
+  expect_equivalent(lm_1_call$fun, "lm")
+  expect_equivalent(lm_1_call$args$subset, character(0))
+  expect_s3_class(lm_single_val, "lm")
+  expect_equivalent(lm_single_call$fun, "lm")
+  expect_equivalent(lm_single_call$args$subset, 1L)
 })
 
 test_that("Multi-class returns can be handled appropriately", {

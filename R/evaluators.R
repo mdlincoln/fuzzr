@@ -47,6 +47,7 @@
 fuzz_function <- function(fun, arg_name, ..., tests = test_all(), check_args = TRUE, test_delim = ";", progress = interactive()) {
 
   fuzz_asserts(fun, check_args, test_delim, progress)
+  attr(fun, "fun_name") <- deparse(substitute(fun))
   assertthat::assert_that(is_named_l(tests))
 
   # Collect the unevaluated names of variables passed to the original call,
@@ -86,8 +87,11 @@ fuzz_function <- function(fun, arg_name, ..., tests = test_all(), check_args = T
 p_fuzz_function <- function(fun, .l, check_args = TRUE, test_delim = ";", progress = interactive()) {
 
   fuzz_asserts(fun, check_args, test_delim, progress)
-
-  fun_name <- deparse(substitute(fun))
+  if(is.null(attr(fun, "fun_name"))) {
+    fun_name <- deparse(substitute(fun))
+  } else {
+    fun_name <- attr(fun, "fun_name")
+  }
 
   if(check_args)
     assertthat::assert_that(assertthat::has_args(fun, names(.l)))
