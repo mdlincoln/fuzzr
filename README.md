@@ -17,80 +17,10 @@ devtools::install_github("mdlincoln/fuzzr")
 Usage
 -----
 
-Evaluate a function argument by supplying it's quoted name along with the tests to run to `fuzz_function`, along with any other required static values. `fuzz_function` returns a "fuzz\_results" object that stores conditions raised by a function (message, warning, or error) along with any value returned by that function.
-
-``` r
-library(fuzzr)
-fuzz_results <- fuzz_function(fun = lm, arg_name = "subset", data = iris, 
-                              formula = Sepal.Length ~ Petal.Width + Petal.Length, 
-                              tests = test_all())
-```
-
-You can render these results as a data frame:
-
-``` r
-fuzz_df <- as.data.frame(fuzz_results)
-dplyr::as_data_frame(fuzz_df)
-#> Source: local data frame [33 x 8]
-#> 
-#>                 subset  data                                   formula
-#>                  <chr> <chr>                                     <chr>
-#> 1           char_empty  iris Sepal.Length ~ Petal.Width + Petal.Length
-#> 2          char_single  iris Sepal.Length ~ Petal.Width + Petal.Length
-#> 3    char_single_blank  iris Sepal.Length ~ Petal.Width + Petal.Length
-#> 4        char_multiple  iris Sepal.Length ~ Petal.Width + Petal.Length
-#> 5  char_multiple_blank  iris Sepal.Length ~ Petal.Width + Petal.Length
-#> 6         char_with_na  iris Sepal.Length ~ Petal.Width + Petal.Length
-#> 7            int_empty  iris Sepal.Length ~ Petal.Width + Petal.Length
-#> 8           int_single  iris Sepal.Length ~ Petal.Width + Petal.Length
-#> 9         int_multiple  iris Sepal.Length ~ Petal.Width + Petal.Length
-#> 10         int_with_na  iris Sepal.Length ~ Petal.Width + Petal.Length
-#> ..                 ...   ...                                       ...
-#> Variables not shown: output <chr>, messages <chr>, warnings <chr>, errors
-#>   <chr>, result_classes <chr>.
-```
-
-You can also access the value returned by any one test by calling the index that test with `value_returned`:
-
-``` r
-model <- fuzz_value(fuzz_results, which.max(fuzz_df$subset == "int_multiple"))
-coefficients(model)
-#>  (Intercept)  Petal.Width Petal.Length 
-#>          0.8           NA          3.0
-```
-
-Multiple-argument tests
------------------------
-
-Specify multiple-argument tests with `p_fuzz_function`, passing a named list of arguments and tests to run on each. `p_fuzz_function` will test every combination of argument and variable.
-
-``` r
-fuzz_p <- p_fuzz_function(agrep, list(pattern = test_char(), x = test_char()))
-dplyr::as_data_frame(as.data.frame(fuzz_p))
-#> Source: local data frame [36 x 7]
-#> 
-#>                pattern           x output messages
-#>                  <chr>       <chr>  <chr>    <chr>
-#> 1           char_empty  char_empty     NA       NA
-#> 2          char_single  char_empty     NA       NA
-#> 3    char_single_blank  char_empty     NA       NA
-#> 4        char_multiple  char_empty     NA       NA
-#> 5  char_multiple_blank  char_empty     NA       NA
-#> 6         char_with_na  char_empty     NA       NA
-#> 7           char_empty char_single     NA       NA
-#> 8          char_single char_single     NA       NA
-#> 9    char_single_blank char_single     NA       NA
-#> 10       char_multiple char_single     NA       NA
-#> ..                 ...         ...    ...      ...
-#> Variables not shown: warnings <chr>, errors <chr>, result_classes <chr>.
-```
-
-Tests
------
-
 Tests are set by passing functions that return named lists of input values. These values will be passed as function arguments. Several default suites are provided with this package, such as `test_char`, however you may implement your own by passing a function that returns a similarly-formatted list.
 
 ``` r
+library(fuzzr)
 test_char()
 #> $char_empty
 #> character(0)
@@ -110,6 +40,57 @@ test_char()
 #> $char_with_na
 #> [1] "a" "b" NA
 ```
+
+Evaluate a function argument by supplying it's quoted name along with the tests to run to `fuzz_function`, along with any other required static values. `fuzz_function` returns a "fuzz\_results" object that stores conditions raised by a function (message, warning, or error) along with any value returned by that function.
+
+``` r
+fuzz_results <- fuzz_function(fun = lm, arg_name = "subset", data = iris, 
+                              formula = Sepal.Length ~ Petal.Width + Petal.Length, 
+                              tests = test_all())
+```
+
+You can render these results as a data frame:
+
+``` r
+fuzz_df <- as.data.frame(fuzz_results)
+knitr::kable(head(fuzz_df))
+```
+
+| subset                | data | formula                                   | output | messages | warnings | errors           | result\_classes |  results\_index|
+|:----------------------|:-----|:------------------------------------------|:-------|:---------|:---------|:-----------------|:----------------|---------------:|
+| char\_empty           | iris | Sepal.Length ~ Petal.Width + Petal.Length | NA     | NA       | NA       | 0 (non-NA) cases | NA              |               1|
+| char\_single          | iris | Sepal.Length ~ Petal.Width + Petal.Length | NA     | NA       | NA       | 0 (non-NA) cases | NA              |               2|
+| char\_single\_blank   | iris | Sepal.Length ~ Petal.Width + Petal.Length | NA     | NA       | NA       | 0 (non-NA) cases | NA              |               3|
+| char\_multiple        | iris | Sepal.Length ~ Petal.Width + Petal.Length | NA     | NA       | NA       | 0 (non-NA) cases | NA              |               4|
+| char\_multiple\_blank | iris | Sepal.Length ~ Petal.Width + Petal.Length | NA     | NA       | NA       | 0 (non-NA) cases | NA              |               5|
+| char\_with\_na        | iris | Sepal.Length ~ Petal.Width + Petal.Length | NA     | NA       | NA       | 0 (non-NA) cases | NA              |               6|
+
+You can also access the value returned by any one test by calling the index that test with `value_returned`:
+
+``` r
+model <- fuzz_value(fuzz_results, which.max(fuzz_df$subset == "int_multiple"))
+coefficients(model)
+#>  (Intercept)  Petal.Width Petal.Length 
+#>          0.8           NA          3.0
+```
+
+### Multiple-argument tests
+
+Specify multiple-argument tests with `p_fuzz_function`, passing a named list of arguments and tests to run on each. `p_fuzz_function` will test every combination of argument and variable.
+
+``` r
+fuzz_p <- p_fuzz_function(agrep, list(pattern = test_char(), x = test_char()))
+knitr::kable(head(as.data.frame(fuzz_p)))
+```
+
+| pattern               | x           | output | messages | warnings                                                                     | errors                                         | result\_classes |  results\_index|
+|:----------------------|:------------|:-------|:---------|:-----------------------------------------------------------------------------|:-----------------------------------------------|:----------------|---------------:|
+| char\_empty           | char\_empty | NA     | NA       | NA                                                                           | invalid 'pattern' argument                     | NA              |               1|
+| char\_single          | char\_empty | NA     | NA       | NA                                                                           | NA                                             | integer         |               2|
+| char\_single\_blank   | char\_empty | NA     | NA       | NA                                                                           | 'pattern' must be a non-empty character string | NA              |               3|
+| char\_multiple        | char\_empty | NA     | NA       | argument 'pattern' has length &gt; 1 and only the first element will be used | NA                                             | integer         |               4|
+| char\_multiple\_blank | char\_empty | NA     | NA       | argument 'pattern' has length &gt; 1 and only the first element will be used | NA                                             | integer         |               5|
+| char\_with\_na        | char\_empty | NA     | NA       | argument 'pattern' has length &gt; 1 and only the first element will be used | NA                                             | integer         |               6|
 
 ------------------------------------------------------------------------
 

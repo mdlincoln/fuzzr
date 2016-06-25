@@ -4,9 +4,8 @@ Title: Fuzz-Test R Functions
 Version: 0.0.1.9000
 Authors@R: person("Matthew", "Lincoln", email = "matthew.d.lincoln@gmail.com",
   role = c("aut", "cre"))
-Description: Test function arguments with a wide array of vector inputs, and
-  produce test reports summarizing messages, warnings, errors, and returned
-  values.
+Description: Test function arguments with a wide array of inputs, and produce
+  reports summarizing messages, warnings, errors, and returned values.
 License: MIT + file LICENSE
 LazyData: TRUE
 RoxygenNote: 5.0.1

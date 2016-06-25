@@ -29,11 +29,20 @@ devtools::install_github("mdlincoln/fuzzr")
 
 ## Usage
 
+Tests are set by passing functions that return named lists of input values.
+These values will be passed as function arguments.
+Several default suites are provided with this package, such as `test_char`, however you may implement your own by passing a function that returns a similarly-formatted list.
+
+```{r}
+library(fuzzr)
+test_char()
+```
+
+
 Evaluate a function argument by supplying it's quoted name along with the tests to run to `fuzz_function`, along with any other required static values. 
 `fuzz_function` returns a "fuzz_results" object that stores conditions raised by a function (message, warning, or error) along with any value returned by that function.
 
 ```{r}
-library(fuzzr)
 fuzz_results <- fuzz_function(fun = lm, arg_name = "subset", data = iris, 
                               formula = Sepal.Length ~ Petal.Width + Petal.Length, 
                               tests = test_all())
@@ -43,7 +52,7 @@ You can render these results as a data frame:
 
 ```{r}
 fuzz_df <- as.data.frame(fuzz_results)
-dplyr::as_data_frame(fuzz_df)
+knitr::kable(head(fuzz_df))
 ```
 
 You can also access the value returned by any one test by calling the index that test with `value_returned`:
@@ -53,24 +62,14 @@ model <- fuzz_value(fuzz_results, which.max(fuzz_df$subset == "int_multiple"))
 coefficients(model)
 ```
 
-## Multiple-argument tests
+### Multiple-argument tests
 
 Specify multiple-argument tests with `p_fuzz_function`, passing a named list of arguments and tests to run on each.
 `p_fuzz_function` will test every combination of argument and variable.
 
 ```{r}
 fuzz_p <- p_fuzz_function(agrep, list(pattern = test_char(), x = test_char()))
-dplyr::as_data_frame(as.data.frame(fuzz_p))
-```
-
-## Tests
-
-Tests are set by passing functions that return named lists of input values.
-These values will be passed as function arguments.
-Several default suites are provided with this package, such as `test_char`, however you may implement your own by passing a function that returns a similarly-formatted list.
-
-```{r}
-test_char()
+knitr::kable(head(as.data.frame(fuzz_p)))
 ```
 
 ---
