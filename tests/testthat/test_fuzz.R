@@ -65,7 +65,7 @@ test_that("as.data.frame.fuzz_results", {
 
 test_that("data frame has correct names", {
   expect_equivalent(as.data.frame(fuzz_function(agrep, "pattern", x = letters, tests = test_char()))$pattern, names(test_char()))
-  expect_equivalent(names(as.data.frame(p_fuzz_function(agrep, list(pattern = test_all(), x = test_all())))), c("pattern", "x", "output", "messages", "warnings", "errors", "result_classes"))
+  expect_equivalent(names(as.data.frame(p_fuzz_function(agrep, list(pattern = test_all(), x = test_all())))), c("pattern", "x", "output", "messages", "warnings", "errors", "result_classes", "results_index"))
 })
 
 test_that("Values can be extracted from a fuzz_results object", {

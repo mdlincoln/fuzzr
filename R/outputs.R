@@ -23,6 +23,7 @@
 as.data.frame.fuzz_results <- function(x, ..., delim = "; ", .id = "fuzz_input") {
   argnames <- names(x[[1]]$call$args)
   df <- purrr::map_df(x, function(x) parse_fuzz_result_concat(x, delim = delim), .id = .id)
+  df$results_index <- 1:length(x)
   tidyr::separate_(df, col = .id, into = argnames, sep = attr(x, "test_delim"))
 }
 
