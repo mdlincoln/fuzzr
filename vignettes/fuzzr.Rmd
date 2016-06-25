@@ -9,11 +9,11 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-R's type-leniency is a blessing and a curse.
-This means it is up to the programmer to judge (or not) which inputs should be accepted, and which should throw errors.
-fuzzr helps you to check how cleanly and informatively your function responds to unexpected input.
+R's dynamic typing can be both blessing and curse.
+One drawback is that a function author must decide how to check which inputs should be accepted, and which should throw warnings or errors.
+fuzzr helps you to check how cleanly and informatively your function responds to a range of unexpected inputs.
 
-Say we build a function that takes a single string and a single integer, repeats the string that number of times, and pastes it together using a given delimiter:
+Say we build a function intended to a single string and a single integer, repeat the string that number of times, and paste it together using a given delimiter:
 
 ```{r}
 my_function <- function(x, n, delim = " - ") {
@@ -45,18 +45,22 @@ fuzz_df <- as.data.frame(my_fuzz_results)
 knitr::kable(fuzz_df)
 ```
 
-Almost any of the unexpected values for `n` throw the farily generic warning `invalid 'times' argument`, which really comes from the `rep` function.
+Almost all the unexpected values for `n` throw the fairly generic warning `invalid 'times' argument`, which really comes from the `rep` function within `my_function`.
 Some types, like doubles, factors, and even dates (!) don't throw errors, but instead return a result.
 We can check the value of that result with `fuzz_value()`, and the call originating it with `fuzz_call()`:
 
 ```{r}
-fuzz_call(my_fuzz_results, fuzz_df[fuzz_df$n == "dbl_single", "results_index"])
-fuzz_value(my_fuzz_results, fuzz_df[fuzz_df$n == "dbl_single", "results_index"])
+dbl_single_index <- fuzz_df[fuzz_df$n == "dbl_single", "results_index"]
 
-fuzz_call(my_fuzz_results, fuzz_df[fuzz_df$n == "date_single", "results_index"])
+fuzz_call(my_fuzz_results, dbl_single_index)
+fuzz_value(my_fuzz_results, dbl_single_index)
+
+date_single_index <- fuzz_df[fuzz_df$n == "date_single", "results_index"]
+
+fuzz_call(my_fuzz_results, date_single_index)
 # Hm, dates can be coerced into very large integers. Let's see how long this
 # result is.
-nchar(fuzz_value(my_fuzz_results, fuzz_df[fuzz_df$n == "date_single", "results_index"]))
+nchar(fuzz_value(my_fuzz_results, date_single_index))
 # Oh dear.
 ```
 
@@ -78,8 +82,9 @@ knitr::kable(fuzz_df_2)
 ## Fuzzing multiple arguments
 
 `fuzz_function` works by mapping several test inputs over one argument of a function while keeping the other arguments static.
-`p_fuzz_function` lets you specify a battery of tests for each variable, and then runs every combination of test.
-This takes a named list of arguments and the tests to be run on them. These tests can be specified using the provided functions like `test_char`, or with variable inputs you provide.
+`p_fuzz_function` lets you specify a battery of tests for each variable as a named list of named lists.
+Every test combination is then run.
+These tests can be specified using the provided functions like `test_char`, or with variable inputs you provide.
 Remember that each test condition must, itself, be named.
 
 ```{r, results = 'asis'}
@@ -97,3 +102,4 @@ prdf <- as.data.frame(pr)
 knitr::kable(head(prdf))
 ```
 
+Specifying multiple arguments can quickly compound the number of total test combinations to run, so `p_fuzz_function` will prompt the user to confirm running more than 500,000 tests at once.
