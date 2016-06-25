@@ -28,8 +28,9 @@ test_that("Unmatched arguments throw errors", {
 })
 
 test_that("Invalid tests throw errors", {
-  expect_error(fuzz_function(lm, "data", tests = "nonlist"), regexp = "is_list")
-  expect_error(fuzz_function(lm, "data", tests = list("nonlist")), regexp = "is not a named list value")
+  expect_error(fuzz_function(lm, "data", tests = "nonlist"), regexp = "Not a named list")
+  expect_error(fuzz_function(lm, "data", tests = list("nonlist")), regexp = "Not a named list")
+  expect_error(fuzz_function(lm, "data", tests = list(foo = "baz", "nonlist")), regexp = "Not a named list")
 })
 
 # p_fuzz_function ----
@@ -42,10 +43,11 @@ test_that("Non-functions throw errors", {
 })
 
 test_that("Invalid tests throw errors", {
-  expect_error(p_fuzz_function(lm, .l = "data"), regexp = "is_list")
-  expect_error(p_fuzz_function(lm, .l = list("data")), regexp = "is not a named list value")
-  expect_error(p_fuzz_function(lm, .l = list(data = "y")), regexp = "is not a named list value")
-  expect_error(p_fuzz_function(lm, .l = list(data = list(y = iris), formula = Sepal.Width ~ .)), regexp = "is not a named list value")
+  expect_error(p_fuzz_function(lm, .l = "data"), regexp = "not a list")
+  expect_error(p_fuzz_function(lm, .l = list("data")), regexp = "Not a completely-named object")
+  expect_error(p_fuzz_function(lm, .l = list(data = "y")), regexp = "not a list")
+  expect_error(p_fuzz_function(lm, .l = list(data = list(y = iris), formula = Sepal.Width ~ .)), regexp = "not a list")
+  expect_error(p_fuzz_function(lm, .l = list(data = list(y = iris), formula = list(Sepal.Width ~ .))), regexp = "Not a completely-named object")
   expect_s3_class(p_fuzz_function(lm, .l = list(data = list(y = iris))), "fuzz_results")
 })
 

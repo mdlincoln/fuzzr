@@ -47,6 +47,7 @@
 fuzz_function <- function(fun, arg_name, ..., tests = test_all(), check_args = TRUE, test_delim = ";", progress = interactive()) {
 
   fuzz_asserts(fun, check_args, test_delim, progress)
+  assertthat::assert_that(is_named_l(tests))
 
   # Collect the unevaluated names of variables passed to the original call,
   # keeping only those passed in as ... These will be used in the named list
@@ -56,8 +57,7 @@ fuzz_function <- function(fun, arg_name, ..., tests = test_all(), check_args = T
   dots_call_names <- dots_call_names[names(.dots)]
 
   # Check that arg_name is a string, and the tests passed is a named list
-  assertthat::assert_that(assertthat::is.string(arg_name),
-                          purrr::is_list(tests), is_named(tests))
+  assertthat::assert_that(assertthat::is.string(arg_name), is_named_l(tests))
 
   # Check that arguments passed to fun actually exist in fun
   if(check_args)
@@ -92,8 +92,8 @@ p_fuzz_function <- function(fun, .l, check_args = TRUE, test_delim = ";", progre
   if(check_args)
     assertthat::assert_that(assertthat::has_args(fun, names(.l)))
 
-  # Ensure .l is a list of named lists
-  is_named_list(.l)
+  # Ensure .l is a named list of named lists
+  is_named_ll(.l)
 
   # Warn if combination of tests is potentially massive
   num_tests <- purrr::reduce(purrr::map_int(.l, length), `*`)
@@ -129,26 +129,34 @@ p_fuzz_function <- function(fun, .l, check_args = TRUE, test_delim = ";", progre
 
 # Internal functions ----
 
-# These assertions need to be checked for both functions
+# This set of assertions need to be checked for both functions
 fuzz_asserts <- function(fun, check_args, test_delim, progress) {
   assertthat::assert_that(
     is.function(fun), assertthat::is.flag(check_args),
     assertthat::is.string(test_delim), assertthat::is.flag(progress))
 }
 
-is_named_list <- function(.l) {
-  assertthat::assert_that(purrr::is_list(.l))
-  purrr::walk(.l, function(x) assertthat::assert_that(is_named(x)))
-  return(TRUE)
+is_named_ll <- function(l) {
+  assertthat::assert_that(is.list(l), is_named(l))
+  purrr::walk(l, function(x) assertthat::assert_that(is.list(x), is_named(x)))
 }
 
-# Check that list contains named lists
+is_named_l <- function(l) {
+  is.list(l) & is_named(l)
+}
+
+assertthat::on_failure(is_named_l) <- function(call, env) {
+  "Not a named list."
+}
+
+# Check that object has no blank names
 is_named <- function(x) {
-  !is.null(names(x))
+  nm <- names(x)
+  !is.null(nm) & all("" != nm)
 }
 
 assertthat::on_failure(is_named) <- function(call, env) {
-  paste0(deparse(call$x), " is not a named list value.")
+  "Not a completely-named object."
 }
 
 # A version of purrr::cross_n that produces top-level names by combining the
