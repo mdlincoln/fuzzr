@@ -39,16 +39,16 @@ NULL
 #' @describeIn fuzz_results Access the object returned by the fuzz test
 #' @export
 fuzz_value <- function(fr, index) {
-  assertthat::assert_that(inherits(fr, "fuzz_results"))
-  assertthat::assert_that(assertthat::is.count(index))
+  assertthat::assert_that(inherits(fr, "fuzz_results"),
+                          assertthat::is.count(index))
   getElement(getElement(fr, index), "value")
 }
 
 #' @describeIn fuzz_results Access the call used for the fuzz test
 #' @export
 fuzz_call <- function(fr, index) {
-  assertthat::assert_that(inherits(fr, "fuzz_results"))
-  assertthat::assert_that(assertthat::is.count(index))
+  assertthat::assert_that(inherits(fr, "fuzz_results"),
+                          assertthat::is.count(index))
   getElement(getElement(fr, index), "call")
 }
 
