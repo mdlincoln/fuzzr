@@ -19,3 +19,5 @@ Suggests:
   knitr,
   rmarkdown
 VignetteBuilder: knitr
+URL: https://github.com/mdlincoln/fuzzr
+BugReports: https://github.com/mdlincoln/fuzzr/issues
