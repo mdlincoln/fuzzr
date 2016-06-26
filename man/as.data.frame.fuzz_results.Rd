@@ -4,19 +4,15 @@
 \alias{as.data.frame.fuzz_results}
 \title{Summarize fuzz test results as a data frame}
 \usage{
-\method{as.data.frame}{fuzz_results}(x, ..., delim = "; ",
-  .id = "fuzz_input")
+\method{as.data.frame}{fuzz_results}(x, ..., delim = "; ")
 }
 \arguments{
 \item{x}{Object returned by \code{\link{fuzz_function}}.}
 
 \item{...}{Additional arguments to be passed to or from methods.}
 
-\item{delim}{The delimiter to use in fields like \code{messages} or
-\code{warnings} where there may be multiple results.}
-
-\item{.id}{Quoted column name for the name of the fuzz input used for each
-test.}
+\item{delim}{The delimiter to use for fields like \code{messages} or
+\code{warnings} in which there may be multiple results.}
 }
 \value{
 A data frame with the following columns: \describe{

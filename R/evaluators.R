@@ -40,10 +40,10 @@
 #' @export
 #' @examples
 #' # Evaluate the 'formula' argument of lm, passing additional required variables
-#' fuzz_function(lm, "formula", data = iris)
+#' fr <- fuzz_function(lm, "formula", data = iris)
 #'
 #' # When evaluating a function that takes ..., set check_args to FALSE
-#' fuzz_function(paste, "x", check_args = FALSE)
+#' fr <- fuzz_function(paste, "x", check_args = FALSE)
 fuzz_function <- function(fun, arg_name, ..., tests = test_all(), check_args = TRUE, test_delim = ";", progress = interactive()) {
 
   fuzz_asserts(fun, check_args, test_delim, progress)
@@ -80,10 +80,14 @@ fuzz_function <- function(fun, arg_name, ..., tests = test_all(), check_args = T
 #' @param .l A named list of tests.
 #' @export
 #' @examples
+#'
+#' # Pass tests to multiple arguments via a named list
 #' test_args <- list(
-#'    data = list(iris = iris, cars = mtcars),
+#'    data = test_df(),
+#'    subset = test_all(),
+#'    # Specify custom tests with a new named list
 #'    formula = list(all_vars = Sepal.Length ~ ., one_var = mpg ~ .))
-#' p_fuzz_function(lm, test_args)
+#' fr <- p_fuzz_function(lm, test_args)
 p_fuzz_function <- function(fun, .l, check_args = TRUE, test_delim = ";", progress = interactive()) {
 
   fuzz_asserts(fun, check_args, test_delim, progress)

@@ -6,7 +6,7 @@
 \alias{fuzzr-package}
 \title{Fuzz-Test R Functions}
 \description{
-Test function arugments with a wide array of vector inputs, and produce test
-reports summarizing messages, warnings, errors, and returned values.
+Test function arugments with a wide array of inputs, and produce reports
+summarizing messages, warnings, errors, and returned values.
 }
 

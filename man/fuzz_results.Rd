@@ -13,8 +13,8 @@ fuzz_call(fr, index)
 \arguments{
 \item{fr}{\code{fuzz_results} object}
 
-\item{index}{The test index (by position) to access.
-Same as the row number in the data frame returned by
+\item{index}{The test index (by position) to access. Same as the
+\code{results_index} in the data frame returned by
 \code{\link{as.data.frame.fuzz_results}}.}
 }
 \description{

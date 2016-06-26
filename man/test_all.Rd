@@ -31,24 +31,66 @@ test_raw()
 test_df()
 }
 \description{
-Fuzz test inputs
+\code{test_all} returns a named list concatentating all the available tests
+specified below.
 }
 \section{Functions}{
 \itemize{
-\item \code{test_char}: Character vectors
+\item \code{test_char}: Character vectors \itemize{
+ \item \code{char_empty}: \code{character(0)}
+ \item \code{char_single}: \code{"a"}
+ \item \code{char_single_blank}: \code{""}
+ \item \code{char_multiple}: \code{c("a", "b", "c")}
+ \item \code{char_multiple_blank}: \code{c("a", "b", "c", "")}
+ \item \code{char_with_na}: \code{c("a", "b", NA)}
+}
 
-\item \code{test_int}: Integer vectors
+\item \code{test_int}: Integer vectors \itemize{
+ \item \code{int_empty}: \code{integer(0)}
+ \item \code{int_single}: \code{1L}
+ \item \code{int_multiple}: \code{1:3}
+ \item \code{int_with_na}: \code{c(1L, 2L, NA)}
+}
 
-\item \code{test_dbl}: Double vectors
+\item \code{test_dbl}: Double vectors \itemize{
+ \item \code{dbl_empty}: \code{numeric(0)}
+ \item \code{dbl_single}: \code{1.5}
+ \item \code{dbl_mutliple}: \code{c(1.5, 2.5, 3.5)}
+ \item \code{dbl_with_na}: \code{c(1.5, 2.5, NA)}
+}
 
-\item \code{test_lgl}: Logical vectors
+\item \code{test_lgl}: Logical vectors \itemize{
+ \item \code{lgl_empty}: \code{logical(0)}
+ \item \code{lgl_single}: \code{TRUE}
+ \item \code{lgl_mutliple}: \code{c(TRUE, FALSE, FALSE)}
+ \item \code{lgl_with_na}: \code{c(TRUE, NA, FALSE)}
+}
 
-\item \code{test_fctr}: Factor vectors
+\item \code{test_fctr}: Factor vectors \itemize{
+ \item \code{fctr_empty}: \code{structure(integer(0), .Label = character(0), class = "factor")}
+ \item \code{fctr_single}: \code{structure(1L, .Label = "a", class = "factor")}
+ \item \code{fctr_multiple}: \code{structure(1:3, .Label = c("a", "b", "c"), class = "factor")}
+ \item \code{fctr_with_na}: \code{structure(c(1L, 2L, NA), .Label = c("a", "b"), class = "factor")}
+ \item \code{fctr_missing_levels}: \code{structure(1:3, .Label = c("a", "b", "c", "d"), class = "factor")}
+}
 
-\item \code{test_date}: Date vectors
+\item \code{test_date}: Date vectors \itemize{
+ \item \code{date_single}: \code{as.Date("2001-01-01")}
+ \item \code{date_multiple}: \code{as.Date(c("2001-01-01", "1950-05-05"))}
+ \item \code{date_with_na}: \code{as.Date(c("2001-01-01", NA, "1950-05-05"))}
+}
 
-\item \code{test_raw}: Raw vectors
+\item \code{test_raw}: Raw vectors \itemize{
+ \item \code{raw_empty}: \code{raw(0)}
+ \item \code{raw_char}: \code{as.raw(0x62)}
+}
 
-\item \code{test_df}: Data frames
+\item \code{test_df}: Data frames \itemize{
+  \item \code{df_complete}: \code{datasets::iris}
+  \item \code{df_empty}: \code{data.frame(NULL)}
+  \item \code{df_one_row}: \code{datasets::iris[1, ]}
+  \item \code{df_one_col}: \code{datasets::iris[ ,1]}
+  \item \code{df_with_na}: \code{iris} with several NAs added to each column.
+}
 }}
 

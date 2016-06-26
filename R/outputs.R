@@ -4,10 +4,8 @@
 #'
 #' @param x Object returned by \code{\link{fuzz_function}}.
 #' @param ... Additional arguments to be passed to or from methods.
-#' @param delim The delimiter to use in fields like \code{messages} or
-#'    \code{warnings} where there may be multiple results.
-#' @param .id Quoted column name for the name of the fuzz input used for each
-#'    test.
+#' @param delim The delimiter to use for fields like \code{messages} or
+#'    \code{warnings} in which there may be multiple results.
 #'
 #' @return A data frame with the following columns: \describe{
 #'   \item{\code{fuzz_input}}{The name of the fuzz test performed.}
@@ -22,7 +20,8 @@
 #'   }
 #'
 #' @export
-as.data.frame.fuzz_results <- function(x, ..., delim = "; ", .id = "fuzz_input") {
+as.data.frame.fuzz_results <- function(x, ..., delim = "; ") {
+  .id <- "test_combo"
   argnames <- names(x[[1]]$call$args)
   df <- purrr::map_df(x, function(x) parse_fuzz_result_concat(x, delim = delim), .id = .id)
   df$results_index <- 1:length(x)
@@ -32,8 +31,8 @@ as.data.frame.fuzz_results <- function(x, ..., delim = "; ", .id = "fuzz_input")
 #' Access individual fuzz test results
 #'
 #' @param fr \code{fuzz_results} object
-#' @param index The test index (by position) to access.
-#'   Same as the row number in the data frame returned by
+#' @param index The test index (by position) to access. Same as the
+#'   \code{results_index} in the data frame returned by
 #'   \code{\link{as.data.frame.fuzz_results}}.
 #' @name fuzz_results
 NULL

@@ -1,13 +1,24 @@
 # Data types ----
 
 #' Fuzz test inputs
+#'
+#' \code{test_all} returns a named list concatentating all the available tests
+#' specified below.
+#'
 #' @export
 test_all <- function() {
   c(test_char(), test_int(), test_dbl(), test_fctr(), test_lgl(), test_date(),
     test_raw(), test_df())
 }
 
-#' @describeIn test_all Character vectors
+#' @describeIn test_all Character vectors \itemize{
+#'  \item \code{char_empty}: \code{character(0)}
+#'  \item \code{char_single}: \code{"a"}
+#'  \item \code{char_single_blank}: \code{""}
+#'  \item \code{char_multiple}: \code{c("a", "b", "c")}
+#'  \item \code{char_multiple_blank}: \code{c("a", "b", "c", "")}
+#'  \item \code{char_with_na}: \code{c("a", "b", NA)}
+#' }
 #' @export
 test_char <- function() {
   list(
@@ -20,7 +31,12 @@ test_char <- function() {
   )
 }
 
-#' @describeIn test_all Integer vectors
+#' @describeIn test_all Integer vectors \itemize{
+#'  \item \code{int_empty}: \code{integer(0)}
+#'  \item \code{int_single}: \code{1L}
+#'  \item \code{int_multiple}: \code{1:3}
+#'  \item \code{int_with_na}: \code{c(1L, 2L, NA)}
+#' }
 #' @export
 test_int <- function() {
   list(
@@ -31,7 +47,12 @@ test_int <- function() {
   )
 }
 
-#' @describeIn test_all Double vectors
+#' @describeIn test_all Double vectors \itemize{
+#'  \item \code{dbl_empty}: \code{numeric(0)}
+#'  \item \code{dbl_single}: \code{1.5}
+#'  \item \code{dbl_mutliple}: \code{c(1.5, 2.5, 3.5)}
+#'  \item \code{dbl_with_na}: \code{c(1.5, 2.5, NA)}
+#' }
 #' @export
 test_dbl <- function() {
   list(
@@ -42,7 +63,12 @@ test_dbl <- function() {
   )
 }
 
-#' @describeIn test_all Logical vectors
+#' @describeIn test_all Logical vectors \itemize{
+#'  \item \code{lgl_empty}: \code{logical(0)}
+#'  \item \code{lgl_single}: \code{TRUE}
+#'  \item \code{lgl_mutliple}: \code{c(TRUE, FALSE, FALSE)}
+#'  \item \code{lgl_with_na}: \code{c(TRUE, NA, FALSE)}
+#' }
 #' @export
 test_lgl <- function() {
   list(
@@ -53,7 +79,13 @@ test_lgl <- function() {
   )
 }
 
-#' @describeIn test_all Factor vectors
+#' @describeIn test_all Factor vectors \itemize{
+#'  \item \code{fctr_empty}: \code{structure(integer(0), .Label = character(0), class = "factor")}
+#'  \item \code{fctr_single}: \code{structure(1L, .Label = "a", class = "factor")}
+#'  \item \code{fctr_multiple}: \code{structure(1:3, .Label = c("a", "b", "c"), class = "factor")}
+#'  \item \code{fctr_with_na}: \code{structure(c(1L, 2L, NA), .Label = c("a", "b"), class = "factor")}
+#'  \item \code{fctr_missing_levels}: \code{structure(1:3, .Label = c("a", "b", "c", "d"), class = "factor")}
+#' }
 #' @export
 test_fctr <- function() {
   list(
@@ -65,7 +97,11 @@ test_fctr <- function() {
   )
 }
 
-#' @describeIn test_all Date vectors
+#' @describeIn test_all Date vectors \itemize{
+#'  \item \code{date_single}: \code{as.Date("2001-01-01")}
+#'  \item \code{date_multiple}: \code{as.Date(c("2001-01-01", "1950-05-05"))}
+#'  \item \code{date_with_na}: \code{as.Date(c("2001-01-01", NA, "1950-05-05"))}
+#' }
 #' @export
 test_date <- function() {
   list(
@@ -75,7 +111,10 @@ test_date <- function() {
   )
 }
 
-#' @describeIn test_all Raw vectors
+#' @describeIn test_all Raw vectors \itemize{
+#'  \item \code{raw_empty}: \code{raw(0)}
+#'  \item \code{raw_char}: \code{as.raw(0x62)}
+#' }
 #' @export
 test_raw <- function() {
   list(
@@ -84,7 +123,13 @@ test_raw <- function() {
   )
 }
 
-#' @describeIn test_all Data frames
+#' @describeIn test_all Data frames \itemize{
+#'   \item \code{df_complete}: \code{datasets::iris}
+#'   \item \code{df_empty}: \code{data.frame(NULL)}
+#'   \item \code{df_one_row}: \code{datasets::iris[1, ]}
+#'   \item \code{df_one_col}: \code{datasets::iris[ ,1]}
+#'   \item \code{df_with_na}: \code{iris} with several NAs added to each column.
+#' }
 #' @export
 test_df <- function() {
   iris_na <- datasets::iris
@@ -100,3 +145,19 @@ test_df <- function() {
     df_with_na = iris_na
   )
 }
+
+# Development utility function ----
+
+# This is a non-exported, non-checked function (hence it's being commented out)
+# to be used to quickly generate the \itemize{...} sections of documentation for
+# vector-based tests. NOTE do not use the verbatim results if they are too
+# lengthy.
+
+# doc_test <- function(test) {
+#   tnames <- names(test)
+#   tval <- purrr::map_chr(test, deparse)
+#   clipr::write_clip(
+#     c("\\itemize{",
+#     paste0("#'  \\item \\code{", tnames, "}: \\code{", tval, "}", collapse = "\n"),
+#     "#' }"))
+# }
