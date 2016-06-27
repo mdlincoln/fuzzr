@@ -11,6 +11,9 @@ Installation
 ------------
 
 ``` r
+install.package("fuzzr")
+
+# Or, for the development version:
 devtools::install_github("mdlincoln/fuzzr")
 ```
 

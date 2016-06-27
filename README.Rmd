@@ -25,6 +25,9 @@ fuzzr implements some simple ["fuzz tests"](https://en.wikipedia.org/wiki/Fuzz_t
 ## Installation
 
 ```{r, eval = FALSE, purl = FALSE}
+install.package("fuzzr")
+
+# Or, for the development version:
 devtools::install_github("mdlincoln/fuzzr")
 ```
 
