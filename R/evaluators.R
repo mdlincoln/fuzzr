@@ -27,7 +27,7 @@
 #' @param test_delim The delimter to use in separating argument names in the
 #'   named list of fuzz test combinations. Note that this value will be passed
 #'   to \code{\link[tidyr]{separate}} when
-#'   \code{link{as.data.frame.fuzz_results}} is called, which will treat it as a
+#'   \code{\link{as.data.frame.fuzz_results}} is called, which will treat it as a
 #'   \link[base]{regex} pattern. Therefore, using reserved regex characters may
 #'   result in unexpected behavior.
 #' @param progress Show a progress bar while running tests?
