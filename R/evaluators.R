@@ -97,6 +97,18 @@ p_fuzz_function <- function(fun, .l, check_args = TRUE, progress = interactive()
   # Ensure .l is a named list of named lists
   is_named_ll(.l)
 
+  # Replace any NULL test values with .null alias.
+  .l <- purrr::map(.l, function(li) {
+    purrr::map(li, function(lli) {
+      if (is.null(lli)) {
+        .null
+      } else {
+        lli
+      }
+    })
+  })
+
+
   # Warn if combination of tests is potentially massive
   num_tests <- purrr::reduce(purrr::map_int(.l, length), `*`)
   if(num_tests >= 500000) {
@@ -107,6 +119,15 @@ p_fuzz_function <- function(fun, .l, check_args = TRUE, progress = interactive()
 
   # Generate the list of tests to be done
   test_list <- named_cross_n(.l)
+
+  # After crossing, restore NULL test values
+  test_list <- purrr::at_depth(test_list, 3, function(x) {
+      if (inherits(x, what = "fuzz-null")) {
+        NULL
+      } else {
+        x
+      }
+    })
 
   # Run tests
   if (progress) {
@@ -131,6 +152,13 @@ p_fuzz_function <- function(fun, .l, check_args = TRUE, progress = interactive()
 }
 
 # Internal functions ----
+
+# Pass NULL as a test value
+#
+# Because it is difficult to work with NULLs in lists as required by most of
+# the fuzzr package, this function works as an alias to pass NULL values to
+# function arguments for testing.
+.null <- structure(NULL, class = "fuzz-null")
 
 # This set of assertions need to be checked for both functions
 fuzz_asserts <- function(fun, check_args, progress) {
