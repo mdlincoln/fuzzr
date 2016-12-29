@@ -129,7 +129,7 @@ test_that("Multi-class returns can be handled appropriately", {
     print("output 2")
     warning("warn 2")
     message("mess 2")
-    if(x == 1) stop("Error at 1")
+    if (x == 1) stop("Error at 1")
     return(r)
   }
 

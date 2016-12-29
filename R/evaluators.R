@@ -55,7 +55,7 @@ fuzz_function <- function(fun, arg_name, ..., tests = test_all(), check_args = T
   assertthat::assert_that(assertthat::is.string(arg_name), is_named_l(tests))
 
   # Check that arguments passed to fun actually exist in fun
-  if(check_args)
+  if (check_args)
     assertthat::assert_that(
       assertthat::has_args(fun, arg_name),
       assertthat::has_args(fun, names(.dots)))
@@ -85,13 +85,13 @@ fuzz_function <- function(fun, arg_name, ..., tests = test_all(), check_args = T
 p_fuzz_function <- function(fun, .l, check_args = TRUE, progress = interactive()) {
 
   fuzz_asserts(fun, check_args, progress)
-  if(is.null(attr(fun, "fun_name"))) {
+  if (is.null(attr(fun, "fun_name"))) {
     fun_name <- deparse(substitute(fun))
   } else {
     fun_name <- attr(fun, "fun_name")
   }
 
-  if(check_args)
+  if (check_args)
     assertthat::assert_that(assertthat::has_args(fun, names(.l)))
 
   # Ensure .l is a named list of named lists
@@ -111,9 +111,9 @@ p_fuzz_function <- function(fun, .l, check_args = TRUE, progress = interactive()
 
   # Warn if combination of tests is potentially massive
   num_tests <- purrr::reduce(purrr::map_int(.l, length), `*`)
-  if(num_tests >= 500000) {
+  if (num_tests >= 500000) {
     m <- utils::menu(choices = c("Yes", "No"), title = paste("The supplied tests have", num_tests, "combinations, which may be prohibitively large to calculate. Attempt to proceed?"))
-    if(m != 1)
+    if (m != 1)
       return(NULL)
   }
 
@@ -132,8 +132,8 @@ p_fuzz_function <- function(fun, .l, check_args = TRUE, progress = interactive()
   # Run tests
   if (progress) {
     pb <- progress::progress_bar$new(
-      format = "  running tests [:bar] :percent eta: :eta",
-      total = length(test_list), clear = FALSE, width= 60)
+      format = " running tests [:bar] :percent eta: :eta",
+      total = length(test_list), clear = FALSE, width = 60)
     pb$tick(0)
   }
 
@@ -252,7 +252,7 @@ try_fuzz <- function(fun, fun_name, all_args) {
       warning = warning_handler
     )}, type = "output")
 
-  if(length(output) == 0) {
+  if (length(output) == 0) {
     output <- NULL
   }
 
