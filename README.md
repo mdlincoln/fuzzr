@@ -74,10 +74,10 @@ knitr::kable(head(fuzz_df))
 | char\_multiple\_blank | iris | Sepal.Length ~ Petal.Width + Petal.Length | NA     | NA       | NA       | 0 (non-NA) cases | NA              |               5|
 | char\_with\_na        | iris | Sepal.Length ~ Petal.Width + Petal.Length | NA     | NA       | NA       | 0 (non-NA) cases | NA              |               6|
 
-You can also access the value returned by any one test by calling the index that test with `value_returned`:
+You can also access the value returned by any one test by matching the argument tested with its test name:
 
 ``` r
-model <- fuzz_value(fuzz_results, which.max(fuzz_df$subset == "int_multiple"))
+model <- fuzz_value(fuzz_results, subset = "int_multiple")
 coefficients(model)
 #>  (Intercept)  Petal.Width Petal.Length 
 #>          0.8           NA          3.0
