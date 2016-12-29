@@ -67,9 +67,12 @@ test_that("as.data.frame.fuzz_results", {
   expect_s3_class(lm_df, "data.frame")
 })
 
+agrep_fuzz <- fuzz_function(agrep, "pattern", x = letters, tests = test_char())
+agrep_p_fuzz <- p_fuzz_function(agrep, list(pattern = test_char(), x = test_char()))
+
 test_that("data frame has correct names", {
-  expect_equivalent(as.data.frame(fuzz_function(agrep, "pattern", x = letters, tests = test_char()))$pattern, names(test_char()))
-  expect_equivalent(names(as.data.frame(p_fuzz_function(agrep, list(pattern = test_all(), x = test_all())))), c("pattern", "x", "output", "messages", "warnings", "errors", "result_classes", "results_index"))
+  expect_equivalent(as.data.frame(agrep_fuzz)$pattern, names(test_char()))
+  expect_equivalent(names(as.data.frame(agrep_p_fuzz)), c("pattern", "x", "output", "messages", "warnings", "errors", "result_classes", "results_index"))
 })
 
 char_empty_index <- lm_df[lm_df$subset == "char_empty", ]$results_index
@@ -96,10 +99,15 @@ test_that("Values can be extracted from a fuzz_results object by regex", {
   lm_single_search_call <- fuzz_call(lm_fuzz, subset = "int_single")
   expect_warning(lm_fail_search_val <- fuzz_value(lm_fuzz, subset = "aaa"))
   expect_warning(lm_fail_search_call <- fuzz_call(lm_fuzz, subset = "aaa"))
+  agrep_multi_search_val <- fuzz_value(agrep_p_fuzz, x = "char_single", pattern = "char_single")
+  agrep_multi_search_call <- fuzz_call(agrep_p_fuzz, x = "char_single", pattern = "char_single")
+  expect_error(fuzz_call(agrep_p_fuzz, q = "char_single"))
 
   expect_null(lm_1_search_val)
   expect_s3_class(lm_single_search_val, "lm")
   expect_null(lm_fail_search_val)
+  expect_equivalent(agrep_multi_search_val, 1L)
+  expect_equivalent(agrep_multi_search_call$fun, "agrep")
 })
 
 test_that("Unmatchable fuzz_results argument search throws an error", {
