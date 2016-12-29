@@ -21,11 +21,9 @@
 #'
 #' @export
 as.data.frame.fuzz_results <- function(x, ..., delim = "; ") {
-  .id <- "test_combo"
-  argnames <- names(x[[1]]$call$args)
-  df <- purrr::map_df(x, function(x) parse_fuzz_result_concat(x, delim = delim), .id = .id)
-  df$results_index <- seq_len(length(x))
-  tidyr::separate_(df, col = .id, into = argnames, sep = attr(x, "test_delim"))
+  df <- purrr::map_df(x, parse_fuzz_result_concat, delim = delim)
+  df[["results_index"]] <- seq_along(x)
+  df
 }
 
 #' Access individual fuzz test results
@@ -34,46 +32,72 @@ as.data.frame.fuzz_results <- function(x, ..., delim = "; ") {
 #' @param index The test index (by position) to access. Same as the
 #'   \code{results_index} in the data frame returned by
 #'   \code{\link{as.data.frame.fuzz_results}}.
+#' @param ... Additional arguments must be named regex patterns that will be used to match against test names. The names of the patterns must match the function argument name(s) whose test names you wish to match.
 #' @name fuzz_results
 NULL
 
 #' @describeIn fuzz_results Access the object returned by the fuzz test
 #' @export
-fuzz_value <- function(fr, index) {
-  assertthat::assert_that(inherits(fr, "fuzz_results"),
-                          assertthat::is.count(index))
-  getElement(fr[[index]], "value")
+fuzz_value <- function(fr, index = NULL, ...) {
+  res <- search_results(fr, index, ...)
+  res[["test_result"]][["value"]]
 }
 
 #' @describeIn fuzz_results Access the call used for the fuzz test
 #' @export
-fuzz_call <- function(fr, index) {
-  assertthat::assert_that(inherits(fr, "fuzz_results"),
-                          assertthat::is.count(index))
-  getElement(fr[[index]], "call")
+fuzz_call <- function(fr, index = NULL, ...) {
+  res <- search_results(fr, index, ...)
+  res[["test_result"]][["call"]]
 }
 
 # Internal functions ----
 
-compose_results <- function(fr, test_delim) {
-  fr <- structure(fr, class = "fuzz_results")
-  attr(fr, "test_delim") <- test_delim
-  return(fr)
+parse_fuzz_result_concat <- function(fr, delim) {
+
+  dfr <- as.data.frame(fr[["test_name"]], stringsAsFactors = FALSE)
+
+  elem_collapse <- function(elem) {
+    if (is.null(elem)) {
+      return(NA_character_)
+    } else {
+      paste(elem, collapse = delim)
+    }
+  }
+
+  dfr[["output"]] <- elem_collapse(fr[["test_result"]][["output"]])
+  dfr[["messages"]] <- elem_collapse(fr[["test_result"]][["messages"]])
+  dfr[["warnings"]] <- elem_collapse(fr[["test_result"]][["warnings"]])
+  dfr[["errors"]] <- elem_collapse(fr[["test_result"]][["errors"]])
+
+  dfr[["result_classes"]] <- ifelse(
+    is.null(fr[["test_result"]][["value"]]),
+    NA_character_,
+    paste(class(fr[["test_result"]][["value"]]), collapse = delim))
+
+  dfr
 }
 
-parse_fuzz_result_concat <- function(fr, delim) {
-  fr$result_classes <- ifelse(is.null(fr$value), as.character(NA),
-                              paste(class(fr$value), collapse = delim))
+# Find elements of the search results list
+search_results <- function(fr, index, ...) {
+  assertthat::assert_that(inherits(fr, "fuzz_results"))
 
-  fr <- purrr::map_at(fr, function(x) {
-    if(is.null(x)) {
-      return(as.character(NA))
-    } else {
-      paste(x, collapse = delim)
-    }
-  }, .at = c("output", "messages", "warnings", "errors"))
+  # value supplied to index takes priority
+  if (!is.null(index)) {
+    assertthat::assert_that(assertthat::is.count(index) && index <= length(fr))
+    res <- fr[[index]]
+  } else {
 
-  fr$call <- NULL
-  fr$value <- NULL
-  as.data.frame(fr, stringsAsFactors = FALSE)
+    # if no index, then check based on test name
+    .dots <- list(...)
+    purrr::walk(.dots, function(p) assertthat::assert_that(assertthat::is.string(p)))
+
+    assertthat::assert_that(all(names(.dots) %in% names(fr[[1]][["test_name"]])))
+
+    res <- purrr::detect(fr, function(el) {
+      all(purrr::map2_lgl(.dots, names(.dots), function(p, n) grepl(p, x = el[["test_name"]][[n]])))
+    })
+    if (length(res) == 0)
+      warning("Zero matches found.")
+  }
+  res
 }

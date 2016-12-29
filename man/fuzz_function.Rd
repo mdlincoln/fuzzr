@@ -6,10 +6,9 @@
 \title{Fuzz-test a function}
 \usage{
 fuzz_function(fun, arg_name, ..., tests = test_all(), check_args = TRUE,
-  test_delim = ";", progress = interactive())
-
-p_fuzz_function(fun, .l, check_args = TRUE, test_delim = ";",
   progress = interactive())
+
+p_fuzz_function(fun, .l, check_args = TRUE, progress = interactive())
 }
 \arguments{
 \item{fun}{A function.}
@@ -25,13 +24,6 @@ defaulting to \code{\link{test_all}}.}
 \item{check_args}{Check if \code{arg_name} and any arguments passed as
 \code{...} are accepted by \code{fun}. Set to \code{FALSE} if you need to
 pass arguments to a function that itself accepts arguments via \code{...}.}
-
-\item{test_delim}{The delimter to use in separating argument names in the
-named list of fuzz test combinations. Note that this value will be passed
-to \code{\link[tidyr]{separate}} when
-\code{\link{as.data.frame.fuzz_results}} is called, which will treat it as a
-\link[base]{regex} pattern. Therefore, using reserved regex characters may
-result in unexpected behavior.}
 
 \item{progress}{Show a progress bar while running tests?}
 
