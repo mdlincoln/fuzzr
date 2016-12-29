@@ -32,23 +32,22 @@ as.data.frame.fuzz_results <- function(x, ..., delim = "; ") {
 #' @param index The test index (by position) to access. Same as the
 #'   \code{results_index} in the data frame returned by
 #'   \code{\link{as.data.frame.fuzz_results}}.
+#' @param ... Additional arguments must be named regex patterns that will be used to match against test names. The names of the patterns must match the function argument name(s) whose test names you wish to match.
 #' @name fuzz_results
 NULL
 
 #' @describeIn fuzz_results Access the object returned by the fuzz test
 #' @export
-fuzz_value <- function(fr, index) {
-  assertthat::assert_that(inherits(fr, "fuzz_results"),
-                          assertthat::is.count(index))
-  fr[[index]][["test_result"]][["value"]]
+fuzz_value <- function(fr, index = NULL, ...) {
+  res <- search_results(fr, index, ...)
+  res[["test_result"]][["value"]]
 }
 
 #' @describeIn fuzz_results Access the call used for the fuzz test
 #' @export
-fuzz_call <- function(fr, index) {
-  assertthat::assert_that(inherits(fr, "fuzz_results"),
-                          assertthat::is.count(index))
-  fr[[index]][["test_result"]][["call"]]
+fuzz_call <- function(fr, index = NULL, ...) {
+  res <- search_results(fr, index, ...)
+  res[["test_result"]][["call"]]
 }
 
 # Internal functions ----
@@ -76,4 +75,29 @@ parse_fuzz_result_concat <- function(fr, delim) {
     paste(class(fr[["test_result"]][["value"]]), collapse = delim))
 
   dfr
+}
+
+# Find elements of the search results list
+search_results <- function(fr, index, ...) {
+  assertthat::assert_that(inherits(fr, "fuzz_results"))
+
+  # value supplied to index takes priority
+  if (!is.null(index)) {
+    assertthat::assert_that(assertthat::is.count(index) && index <= length(fr))
+    res <- fr[[index]]
+  } else {
+
+    # if no index, then check based on test name
+    .dots <- list(...)
+    purrr::walk(.dots, function(p) assertthat::assert_that(assertthat::is.string(p)))
+
+    assertthat::assert_that(all(names(.dots) %in% names(fr[[1]][["test_name"]])))
+
+    res <- purrr::detect(fr, function(el) {
+      all(purrr::map2_lgl(.dots, names(.dots), function(p, n) grepl(p, x = el[["test_name"]][[n]])))
+    })
+    if (length(res) == 0)
+      warning("Zero matches found.")
+  }
+  res
 }

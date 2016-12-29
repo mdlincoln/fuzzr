@@ -6,9 +6,9 @@
 \alias{fuzz_value}
 \title{Access individual fuzz test results}
 \usage{
-fuzz_value(fr, index)
+fuzz_value(fr, index = NULL, ...)
 
-fuzz_call(fr, index)
+fuzz_call(fr, index = NULL, ...)
 }
 \arguments{
 \item{fr}{\code{fuzz_results} object}
@@ -16,6 +16,8 @@ fuzz_call(fr, index)
 \item{index}{The test index (by position) to access. Same as the
 \code{results_index} in the data frame returned by
 \code{\link{as.data.frame.fuzz_results}}.}
+
+\item{...}{Additional arguments must be named regex patterns that will be used to match against test names. The names of the patterns must match the function argument name(s) whose test names you wish to match.}
 }
 \description{
 Access individual fuzz test results
