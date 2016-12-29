@@ -115,28 +115,25 @@ p_fuzz_function <- function(fun, .l, check_args = TRUE, progress = interactive()
   test_list <- named_cross_n(.l)
 
   # Run tests
-  if(progress) {
+  if (progress) {
     pb <- progress::progress_bar$new(
       format = "  running tests [:bar] :percent eta: :eta",
       total = length(test_list), clear = FALSE, width= 60)
     pb$tick(0)
-    fr <- purrr::map(
-      test_list, function(x) {
-        pb$tick()
-        arglist <- purrr::map(x, getElement, name = "test_value")
-        testnames <- purrr::map(x, getElement, name = "test_name")
-        res <- list(test_result = try_fuzz(fun = fun, fun_name = fun_name,
-                 all_args = arglist))
-        res[["test_name"]] <- testnames
-        res
-      })
-  } else {
-    fr <- purrr::map(test_list, function(x) {
-      try_fuzz(fun = fun, fun_name = fun_name, all_args = x)
-    })
   }
 
-  compose_results(fr)
+  fr <- purrr::map(
+    test_list, function(x) {
+      if (exists("pb")) pb$tick()
+      arglist <- purrr::map(x, getElement, name = "test_value")
+      testnames <- purrr::map(x, getElement, name = "test_name")
+      res <- list(test_result = try_fuzz(fun = fun, fun_name = fun_name,
+                                         all_args = arglist))
+      res[["test_name"]] <- testnames
+      res
+    })
+
+  structure(fr, class = "fuzz_results")
 }
 
 # Internal functions ----

@@ -53,11 +53,6 @@ fuzz_call <- function(fr, index) {
 
 # Internal functions ----
 
-compose_results <- function(fr) {
-  fr <- structure(fr, class = "fuzz_results")
-  return(fr)
-}
-
 parse_fuzz_result_concat <- function(fr, delim) {
 
   dfr <- as.data.frame(fr[["test_name"]], stringsAsFactors = FALSE)
