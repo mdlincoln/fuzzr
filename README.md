@@ -24,30 +24,16 @@ Tests are set by passing functions that return named lists of input values. Thes
 
 ``` r
 library(fuzzr)
-test_char()
-#> $char_empty
-#> character(0)
-#> 
-#> $char_single
-#> [1] "a"
-#> 
-#> $char_single_blank
-#> [1] ""
-#> 
-#> $char_multiple
-#> [1] "a" "b" "c"
-#> 
-#> $char_multiple_blank
-#> [1] "a" "b" "c" "" 
-#> 
-#> $char_with_na
-#> [1] "a" "b" NA 
-#> 
-#> $char_single_na
-#> [1] NA
-#> 
-#> $char_all_na
-#> [1] NA NA NA
+str(test_char())
+#> List of 8
+#>  $ char_empty         : chr(0) 
+#>  $ char_single        : chr "a"
+#>  $ char_single_blank  : chr ""
+#>  $ char_multiple      : chr [1:3] "a" "b" "c"
+#>  $ char_multiple_blank: chr [1:4] "a" "b" "c" ""
+#>  $ char_with_na       : chr [1:3] "a" "b" NA
+#>  $ char_single_na     : chr NA
+#>  $ char_all_na        : chr [1:3] NA NA NA
 ```
 
 Evaluate a function argument by supplying `fuzz_function` its quoted name, the tests to run, along with any other required static values. `fuzz_function` returns a `fuzz_results` object that stores conditions raised by a function (message, warning, or error) along with any value returned by that function.
@@ -89,6 +75,8 @@ Specify multiple-argument tests with `p_fuzz_function`, passing a named list of 
 
 ``` r
 fuzz_p <- p_fuzz_function(agrep, list(pattern = test_char(), x = test_char()))
+length(fuzz_p)
+#> [1] 64
 knitr::kable(head(as.data.frame(fuzz_p)))
 ```
 

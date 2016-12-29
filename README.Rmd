@@ -39,7 +39,7 @@ Several default suites are provided with this package, such as `test_char`, howe
 
 ```{r}
 library(fuzzr)
-test_char()
+str(test_char())
 ```
 
 
@@ -73,6 +73,7 @@ Specify multiple-argument tests with `p_fuzz_function`, passing a named list of 
 
 ```{r}
 fuzz_p <- p_fuzz_function(agrep, list(pattern = test_char(), x = test_char()))
+length(fuzz_p)
 knitr::kable(head(as.data.frame(fuzz_p)))
 ```
 
