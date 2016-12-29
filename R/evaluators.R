@@ -12,8 +12,8 @@
 #' tests to run on each argument, and will evaluate every combination of
 #' argument and provided test.
 #'
-#' @note The user will be asked to confirm exectuing the function if the
-#'   combinations of potential tests exceeds 500,000.
+#' @note The user will be asked to confirm before proceeding if the combinations
+#'   of potential tests exceeds 500,000.
 #'
 #' @param fun A function.
 #' @param arg_name Quoted name of the argument to fuzz test.
@@ -23,13 +23,13 @@
 #'   defaulting to \code{\link{test_all}}.
 #' @param check_args Check if \code{arg_name} and any arguments passed as
 #'   \code{...} are accepted by \code{fun}. Set to \code{FALSE} if you need to
-#'   pass arguments to a function that itself accepts arguments via \code{...}.
+#'   pass arguments to a function that accepts arguments via \code{...}.
 #' @param progress Show a progress bar while running tests?
 #'
 #' @return A \code{fuzz_results} object.
 #'
-#' @seealso \code{\link{as.data.frame.fuzz_results}} and
-#'   \code{\link{fuzz_value}} to access fuzz test results.
+#' @seealso \code{\link{fuzz_results}} and
+#'   \code{\link{as.data.frame.fuzz_results}} to access fuzz test results.
 #'
 #' @export
 #' @examples
@@ -108,7 +108,6 @@ p_fuzz_function <- function(fun, .l, check_args = TRUE, progress = interactive()
     })
   })
 
-
   # Warn if combination of tests is potentially massive
   num_tests <- purrr::reduce(purrr::map_int(.l, length), `*`)
   if (num_tests >= 500000) {
@@ -129,7 +128,7 @@ p_fuzz_function <- function(fun, .l, check_args = TRUE, progress = interactive()
       }
     })
 
-  # Run tests
+  # Create a progress bar, if called for
   if (progress) {
     pb <- progress::progress_bar$new(
       format = " running tests [:bar] :percent eta: :eta",
@@ -137,11 +136,20 @@ p_fuzz_function <- function(fun, .l, check_args = TRUE, progress = interactive()
     pb$tick(0)
   }
 
+  # For each test combination...
   fr <- purrr::map(
     test_list, function(x) {
       if (exists("pb")) pb$tick()
+
+      # Extract values for testing
       arglist <- purrr::map(x, getElement, name = "test_value")
+
+      # Extract names of tests
       testnames <- purrr::map(x, getElement, name = "test_name")
+
+      # Create a result list with both the results of try_fuzz, as well as a
+      # named list pairing argument names with the test names supplied to them
+      # for this particular round
       res <- list(test_result = try_fuzz(fun = fun, fun_name = fun_name,
                                          all_args = arglist))
       res[["test_name"]] <- testnames

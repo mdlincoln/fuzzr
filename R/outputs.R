@@ -52,6 +52,8 @@ fuzz_call <- function(fr, index = NULL, ...) {
 
 # Internal functions ----
 
+# For each result, create a one-row data frame of test names, outputs, messages,
+# warnings, errors, and result classes.
 parse_fuzz_result_concat <- function(fr, delim) {
 
   dfr <- as.data.frame(fr[["test_name"]], stringsAsFactors = FALSE)
@@ -69,6 +71,8 @@ parse_fuzz_result_concat <- function(fr, delim) {
   dfr[["warnings"]] <- elem_collapse(fr[["test_result"]][["warnings"]])
   dfr[["errors"]] <- elem_collapse(fr[["test_result"]][["errors"]])
 
+  # If no object was returned by the function under given test conditions,
+  # record value as NA in the data frame
   dfr[["result_classes"]] <- ifelse(
     is.null(fr[["test_result"]][["value"]]),
     NA_character_,

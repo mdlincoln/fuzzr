@@ -23,7 +23,7 @@ defaulting to \code{\link{test_all}}.}
 
 \item{check_args}{Check if \code{arg_name} and any arguments passed as
 \code{...} are accepted by \code{fun}. Set to \code{FALSE} if you need to
-pass arguments to a function that itself accepts arguments via \code{...}.}
+pass arguments to a function that accepts arguments via \code{...}.}
 
 \item{progress}{Show a progress bar while running tests?}
 
@@ -45,8 +45,8 @@ tests to run on each argument, and will evaluate every combination of
 argument and provided test.
 }
 \note{
-The user will be asked to confirm exectuing the function if the
-  combinations of potential tests exceeds 500,000.
+The user will be asked to confirm before proceeding if the combinations
+  of potential tests exceeds 500,000.
 }
 \examples{
 # Evaluate the 'formula' argument of lm, passing additional required variables
@@ -64,7 +64,7 @@ test_args <- list(
 fr <- p_fuzz_function(lm, test_args)
 }
 \seealso{
-\code{\link{as.data.frame.fuzz_results}} and
-  \code{\link{fuzz_value}} to access fuzz test results.
+\code{\link{fuzz_results}} and
+  \code{\link{as.data.frame.fuzz_results}} to access fuzz test results.
 }
 

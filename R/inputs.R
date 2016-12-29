@@ -2,7 +2,7 @@
 
 #' Fuzz test inputs
 #'
-#' \code{test_all} returns a named list concatentating all the available tests
+#' Each \code{test_all} returns a named list concatentating all the available tests
 #' specified below.
 #'
 #' @export
@@ -172,7 +172,7 @@ test_df <- function() {
   )
 }
 
-#' describeIn test_all null \itemize{
+#' @describeIn test_all Null value \itemize{
 #'  \item \code{null_value}: \code{NULL}
 #' }
 #' @export

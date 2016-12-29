@@ -9,6 +9,7 @@
 \alias{test_fctr}
 \alias{test_int}
 \alias{test_lgl}
+\alias{test_null}
 \alias{test_raw}
 \title{Fuzz test inputs}
 \usage{
@@ -29,9 +30,11 @@ test_date()
 test_raw()
 
 test_df()
+
+test_null()
 }
 \description{
-\code{test_all} returns a named list concatentating all the available tests
+Each \code{test_all} returns a named list concatentating all the available tests
 specified below.
 }
 \section{Functions}{
@@ -104,6 +107,10 @@ specified below.
   \item \code{df_one_row}: \code{datasets::iris[1, ]}
   \item \code{df_one_col}: \code{datasets::iris[ ,1]}
   \item \code{df_with_na}: \code{iris} with several NAs added to each column.
+}
+
+\item \code{test_null}: Null value \itemize{
+ \item \code{null_value}: \code{NULL}
 }
 }}
 
