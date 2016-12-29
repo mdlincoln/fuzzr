@@ -8,7 +8,7 @@
 #' @export
 test_all <- function() {
   c(test_char(), test_int(), test_dbl(), test_fctr(), test_lgl(), test_date(),
-    test_raw(), test_df())
+    test_raw(), test_df(), test_null())
 }
 
 #' @describeIn test_all Character vectors \itemize{
@@ -169,6 +169,16 @@ test_df <- function() {
     df_one_row = datasets::iris[1, ],
     df_one_col = datasets::iris[ ,1],
     df_with_na = iris_na
+  )
+}
+
+#' describeIn test_all null \itemize{
+#'  \item \code{null_value}: \code{NULL}
+#' }
+#' @export
+test_null <- function() {
+  list(
+    null_value = NULL
   )
 }
 
