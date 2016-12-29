@@ -21,11 +21,9 @@
 #'
 #' @export
 as.data.frame.fuzz_results <- function(x, ..., delim = "; ") {
-  .id <- "test_combo"
-  argnames <- names(x[[1]]$call$args)
-  df <- purrr::map_df(x, function(x) parse_fuzz_result_concat(x, delim = delim), .id = .id)
-  df$results_index <- seq_len(length(x))
-  tidyr::separate_(df, col = .id, into = argnames, sep = attr(x, "test_delim"))
+  df <- purrr::map_df(x, parse_fuzz_result_concat, delim = delim)
+  df[["results_index"]] <- seq_along(x)
+  df
 }
 
 #' Access individual fuzz test results
@@ -42,7 +40,7 @@ NULL
 fuzz_value <- function(fr, index) {
   assertthat::assert_that(inherits(fr, "fuzz_results"),
                           assertthat::is.count(index))
-  getElement(fr[[index]], "value")
+  fr[[index]][["test_result"]][["value"]]
 }
 
 #' @describeIn fuzz_results Access the call used for the fuzz test
@@ -50,30 +48,37 @@ fuzz_value <- function(fr, index) {
 fuzz_call <- function(fr, index) {
   assertthat::assert_that(inherits(fr, "fuzz_results"),
                           assertthat::is.count(index))
-  getElement(fr[[index]], "call")
+  fr[[index]][["test_result"]][["call"]]
 }
 
 # Internal functions ----
 
-compose_results <- function(fr, test_delim) {
+compose_results <- function(fr) {
   fr <- structure(fr, class = "fuzz_results")
-  attr(fr, "test_delim") <- test_delim
   return(fr)
 }
 
 parse_fuzz_result_concat <- function(fr, delim) {
-  fr$result_classes <- ifelse(is.null(fr$value), as.character(NA),
-                              paste(class(fr$value), collapse = delim))
 
-  fr <- purrr::map_at(fr, function(x) {
-    if(is.null(x)) {
-      return(as.character(NA))
+  dfr <- as.data.frame(fr[["test_name"]], stringsAsFactors = FALSE)
+
+  elem_collapse <- function(elem) {
+    if (is.null(elem)) {
+      return(NA_character_)
     } else {
-      paste(x, collapse = delim)
+      paste(elem, collapse = delim)
     }
-  }, .at = c("output", "messages", "warnings", "errors"))
+  }
 
-  fr$call <- NULL
-  fr$value <- NULL
-  as.data.frame(fr, stringsAsFactors = FALSE)
+  dfr[["output"]] <- elem_collapse(fr[["test_result"]][["output"]])
+  dfr[["messages"]] <- elem_collapse(fr[["test_result"]][["messages"]])
+  dfr[["warnings"]] <- elem_collapse(fr[["test_result"]][["warnings"]])
+  dfr[["errors"]] <- elem_collapse(fr[["test_result"]][["errors"]])
+
+  dfr[["result_classes"]] <- ifelse(
+    is.null(fr[["test_result"]][["value"]]),
+    NA_character_,
+    paste(class(fr[["test_result"]][["value"]]), collapse = delim))
+
+  dfr
 }
