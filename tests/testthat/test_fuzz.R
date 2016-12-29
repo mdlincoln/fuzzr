@@ -52,6 +52,7 @@ test_that("Invalid tests throw errors", {
 })
 
 test_that("Over-large test suites raise a menu", {
+  skip_if_not(!interactive())
   expect_error(p_fuzz_function(lm, .l = list(a = test_all(), b = test_all(), c = test_all(), d = test_all()), check_args = FALSE), regexp = "cannot be used non-interactively")
 })
 
