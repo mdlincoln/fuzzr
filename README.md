@@ -50,7 +50,7 @@ test_char()
 #> [1] NA NA NA
 ```
 
-Evaluate a function argument by supplying it's quoted name along with the tests to run to `fuzz_function`, along with any other required static values. `fuzz_function` returns a "fuzz\_results" object that stores conditions raised by a function (message, warning, or error) along with any value returned by that function.
+Evaluate a function argument by supplying `fuzz_function` its quoted name, the tests to run, along with any other required static values. `fuzz_function` returns a `fuzz_results` object that stores conditions raised by a function (message, warning, or error) along with any value returned by that function.
 
 ``` r
 fuzz_results <- fuzz_function(fun = lm, arg_name = "subset", data = iris, 
