@@ -43,6 +43,8 @@ specified below.
  \item \code{char_multiple}: \code{c("a", "b", "c")}
  \item \code{char_multiple_blank}: \code{c("a", "b", "c", "")}
  \item \code{char_with_na}: \code{c("a", "b", NA)}
+ \item \code{char_single_na}: \code{NA_character_}
+ \item \code{char_all_na}: \code{c(NA_character_, NA_character_, NA_character_)}
 }
 
 \item \code{test_int}: Integer vectors \itemize{
@@ -50,6 +52,8 @@ specified below.
  \item \code{int_single}: \code{1L}
  \item \code{int_multiple}: \code{1:3}
  \item \code{int_with_na}: \code{c(1L, 2L, NA)}
+ \item \code{int_single_na}: \code{NA_integer_}
+ \item \code{int_all_na}: \code{c(NA_integer_, NA_integer_, NA_integer_)}
 }
 
 \item \code{test_dbl}: Double vectors \itemize{
@@ -57,6 +61,8 @@ specified below.
  \item \code{dbl_single}: \code{1.5}
  \item \code{dbl_mutliple}: \code{c(1.5, 2.5, 3.5)}
  \item \code{dbl_with_na}: \code{c(1.5, 2.5, NA)}
+ \item \code{dbl_single_na}: \code{NA_real_}
+ \item \code{dbl_all_na}: \code{c(NA_real_, NA_real_, NA_real_)}
 }
 
 \item \code{test_lgl}: Logical vectors \itemize{
@@ -64,6 +70,8 @@ specified below.
  \item \code{lgl_single}: \code{TRUE}
  \item \code{lgl_mutliple}: \code{c(TRUE, FALSE, FALSE)}
  \item \code{lgl_with_na}: \code{c(TRUE, NA, FALSE)}
+ \item \code{lgl_single_na}: \code{NA}
+ \item \code{lgl_all_na}: \code{c(NA, NA, NA)}
 }
 
 \item \code{test_fctr}: Factor vectors \itemize{
@@ -72,17 +80,22 @@ specified below.
  \item \code{fctr_multiple}: \code{structure(1:3, .Label = c("a", "b", "c"), class = "factor")}
  \item \code{fctr_with_na}: \code{structure(c(1L, 2L, NA), .Label = c("a", "b"), class = "factor")}
  \item \code{fctr_missing_levels}: \code{structure(1:3, .Label = c("a", "b", "c", "d"), class = "factor")}
+ \item \code{fctr_single_na}: \code{structure(NA_integer_, .Label = character(0), class = "factor")}
+ \item \code{fctr_all_na}: \code{structure(c(NA_integer_, NA_integer_, NA_integer_), .Label = character(0), class = "factor")}
 }
 
 \item \code{test_date}: Date vectors \itemize{
  \item \code{date_single}: \code{as.Date("2001-01-01")}
  \item \code{date_multiple}: \code{as.Date(c("2001-01-01", "1950-05-05"))}
  \item \code{date_with_na}: \code{as.Date(c("2001-01-01", NA, "1950-05-05"))}
+ \item \code{date_single_na}: \code{as.Date(NA_integer_, origin = "1971-01-01")}
+ \item \code{date_all_na}: \code{as.Date(rep(NA_integer_, 3), origin = "1971-01-01")}
 }
 
 \item \code{test_raw}: Raw vectors \itemize{
  \item \code{raw_empty}: \code{raw(0)}
- \item \code{raw_char}: \code{as.raw(0x62)}
+ \item \code{raw_char}: \code{as.raw(0x62)},
+ \item \code{raw_na}: \code{charToRaw(NA_character_)}
 }
 
 \item \code{test_df}: Data frames \itemize{
