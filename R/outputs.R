@@ -21,7 +21,8 @@
 #'
 #' @export
 as.data.frame.fuzz_results <- function(x, ..., delim = "; ") {
-  df <- purrr::map_df(x, parse_fuzz_result_concat, delim = delim)
+  ldf <- purrr::map(x, parse_fuzz_result_concat, delim = delim)
+  df <- do.call("rbind", ldf)
   df[["results_index"]] <- seq_along(x)
   df
 }
