@@ -67,4 +67,3 @@ fr <- p_fuzz_function(lm, test_args)
 \code{\link{fuzz_results}} and
   \code{\link{as.data.frame.fuzz_results}} to access fuzz test results.
 }
-

@@ -8,7 +8,7 @@ Description: Test function arguments with a wide array of inputs, and produce
   reports summarizing messages, warnings, errors, and returned values.
 License: MIT + file LICENSE
 LazyData: TRUE
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1
 Imports:
   assertthat,
   progress,

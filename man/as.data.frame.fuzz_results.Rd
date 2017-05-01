@@ -30,4 +30,3 @@ A data frame with the following columns: \describe{
 \description{
 Summarize fuzz test results as a data frame
 }
-

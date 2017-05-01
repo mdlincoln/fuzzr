@@ -3,14 +3,14 @@
 \name{test_all}
 \alias{test_all}
 \alias{test_char}
-\alias{test_date}
-\alias{test_dbl}
-\alias{test_df}
-\alias{test_fctr}
 \alias{test_int}
+\alias{test_dbl}
 \alias{test_lgl}
-\alias{test_null}
+\alias{test_fctr}
+\alias{test_date}
 \alias{test_raw}
+\alias{test_df}
+\alias{test_null}
 \title{Fuzz test inputs}
 \usage{
 test_all()
