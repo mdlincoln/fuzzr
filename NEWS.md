@@ -1,3 +1,7 @@
+# fuzzr 0.2.1
+
+* Removes one call to `purrr::map_df` to be compatible with purrr 0.2.2.1.
+
 # fuzzr 0.2
 
 * Added a `NEWS.md` file to track changes to the package.

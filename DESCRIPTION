@@ -1,7 +1,7 @@
 Package: fuzzr
 Type: Package
 Title: Fuzz-Test R Functions
-Version: 0.2.0.9000
+Version: 0.2.1
 Authors@R: person("Matthew", "Lincoln", email = "matthew.d.lincoln@gmail.com",
   role = c("aut", "cre"))
 Description: Test function arguments with a wide array of inputs, and produce
