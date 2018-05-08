@@ -1,22 +1,22 @@
-Package: fuzzr
 Type: Package
+Package: fuzzr
 Title: Fuzz-Test R Functions
-Version: 0.2.1
+Version: 0.2.2
 Authors@R: person("Matthew", "Lincoln", email = "matthew.d.lincoln@gmail.com",
   role = c("aut", "cre"))
 Description: Test function arguments with a wide array of inputs, and produce
   reports summarizing messages, warnings, errors, and returned values.
 License: MIT + file LICENSE
-LazyData: TRUE
-RoxygenNote: 6.0.1
-Imports:
-  assertthat,
-  progress,
-  purrr
-Suggests:
-  testthat,
-  knitr,
-  rmarkdown
-VignetteBuilder: knitr
 URL: https://github.com/mdlincoln/fuzzr
 BugReports: https://github.com/mdlincoln/fuzzr/issues
+Imports: 
+    assertthat,
+    progress,
+    purrr
+Suggests: 
+    knitr,
+    rmarkdown,
+    testthat
+VignetteBuilder: knitr
+LazyData: TRUE
+RoxygenNote: 6.0.1
