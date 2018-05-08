@@ -1,3 +1,10 @@
+# fuzzr 0.2.2
+
+* Modifies test so as to not appear to be doing a logical test on a vector of
+length > 1 
+* Replaces deprecated `purrr::cross_n` and `purrr::at_depth` with
+`purrr::cross` and `purrr::modify_depth`
+
 # fuzzr 0.2.1
 
 * Removes one call to `purrr::map_df` to be compatible with purrr 0.2.2.1.
