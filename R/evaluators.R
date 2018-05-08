@@ -120,7 +120,7 @@ p_fuzz_function <- function(fun, .l, check_args = TRUE, progress = interactive()
   test_list <- named_cross_n(.l)
 
   # After crossing, restore NULL test values
-  test_list <- purrr::at_depth(test_list, 3, function(x) {
+  test_list <- purrr::modify_depth(test_list, 3, function(x) {
       if (inherits(x, what = "fuzz-null")) {
         NULL
       } else {
@@ -166,7 +166,7 @@ p_fuzz_function <- function(fun, .l, check_args = TRUE, progress = interactive()
 # Because it is difficult to work with NULLs in lists as required by most of
 # the fuzzr package, this function works as an alias to pass NULL values to
 # function arguments for testing.
-.null <- structure(NULL, class = "fuzz-null")
+.null <- structure(list(), class = "fuzz-null")
 
 # This set of assertions need to be checked for both functions
 fuzz_asserts <- function(fun, check_args, progress) {
@@ -204,9 +204,9 @@ assertthat::on_failure(is_named) <- function(call, env) {
 named_cross_n <- function(ll) {
 
   # Cross the values of the list...
-  crossed_values <- purrr::cross_n(ll)
+  crossed_values <- purrr::cross(ll)
   # ... and then cross the names
-  crossed_names <- purrr::cross_n(purrr::map(ll, names))
+  crossed_names <- purrr::cross(purrr::map(ll, names))
 
   # Then map through both values and names in order to
   purrr::map2(crossed_values, crossed_names, function(x, y) {
