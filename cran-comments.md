@@ -1,7 +1,8 @@
-This release fixes an error introduced by purrr 0.2.2.1
+This release replaces two functions deprecated by purrr, and replaces an if()
+statement applied to a vector of length > 1.
 
 ## Test environments
-* local OS X install, R 3.3.2
+* local OS X install, R 3.4.4
 * ubuntu 12.04 (oldrel, release, and devel)
 * win-builder (devel and release)
 
