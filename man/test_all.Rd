@@ -34,8 +34,8 @@ test_df()
 test_null()
 }
 \description{
-Each \code{test_all} returns a named list concatentating all the available tests
-specified below.
+Each \code{test_all} returns a named list that concatenates all the available
+tests specified below.
 }
 \section{Functions}{
 \itemize{

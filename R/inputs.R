@@ -2,8 +2,8 @@
 
 #' Fuzz test inputs
 #'
-#' Each \code{test_all} returns a named list concatentating all the available tests
-#' specified below.
+#' Each \code{test_all} returns a named list that concatenates all the available
+#' tests specified below.
 #'
 #' @export
 test_all <- function() {

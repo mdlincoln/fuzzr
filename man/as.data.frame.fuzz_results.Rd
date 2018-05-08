@@ -19,7 +19,7 @@ A data frame with the following columns: \describe{
   \item{\code{fuzz_input}}{The name of the fuzz test performed.}
   \item{\code{output}}{Delimited outputs to the command line from the process, if applicable.}
   \item{\code{messages}}{Delimited messages, if applicable.}
-  \item{\code{warnings}}{Delimited warnnings, if applicable.}
+  \item{\code{warnings}}{Delimited warnings, if applicable.}
   \item{\code{errors}}{Error returned, if applicable.}
   \item{\code{value_classes}}{Delimited classes of the object returned by the
    function, if applicable}
