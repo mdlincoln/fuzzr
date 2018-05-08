@@ -129,7 +129,7 @@ test_that("Multi-class returns can be handled appropriately", {
     print("output 2")
     warning("warn 2")
     message("mess 2")
-    if (x == 1) stop("Error at 1")
+    if (length(x) == 1) if (x == 1) stop("Error at 1")
     return(r)
   }
 
@@ -144,6 +144,6 @@ test_that("Multi-class returns can be handled appropriately", {
   expect_true(is.character(fdf$errors))
   expect_true(is.character(fdf$result_classes))
   expect_match(fdf[fdf$x == "int_single", ]$errors, "Error at 1")
-  expect_match(fdf[fdf$x == "char_multiple", ]$warnings, "condition has length > 1")
+  expect_match(fdf[fdf$x == "char_multiple", ]$warnings, "warn 1; warn 2")
   expect_match(fdf$messages[1], "|")
 })
