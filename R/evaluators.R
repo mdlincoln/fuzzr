@@ -39,7 +39,6 @@
 #' # When evaluating a function that takes ..., set check_args to FALSE
 #' fr <- fuzz_function(paste, "x", check_args = FALSE)
 fuzz_function <- function(fun, arg_name, ..., tests = test_all(), check_args = TRUE, progress = interactive()) {
-
   fuzz_asserts(fun, check_args, progress)
   attr(fun, "fun_name") <- deparse(substitute(fun))
   assertthat::assert_that(is_named_l(tests))
@@ -48,26 +47,82 @@ fuzz_function <- function(fun, arg_name, ..., tests = test_all(), check_args = T
   # keeping only those passed in as ... These will be used in the named list
   # passed to p_fuzz_function
   dots_call_names <- purrr::map_chr(as.list(match.call()), deparse)
-  .dots = list(...)
-  dots_call_names <- dots_call_names[names(.dots)]
+  if (!is.null(names(list(...)))) {
+    .dots <- list(...)
+    dots_call_names <- dots_call_names[names(.dots)]
+  } else {
+    .dots <- c(...)
+    dots_call_names <- names(.dots)
+  }
 
   # Check that arg_name is a string, and the tests passed is a named list
   assertthat::assert_that(assertthat::is.string(arg_name), is_named_l(tests))
 
   # Check that arguments passed to fun actually exist in fun
-  if (check_args)
+  if (check_args) {
     assertthat::assert_that(
       assertthat::has_args(fun, arg_name),
-      assertthat::has_args(fun, names(.dots)))
+      assertthat::has_args(fun, names(.dots))
+    )
+  }
 
   # Construct a list of arguments for p_fuzz_function, with tests assigned to
   # arg_name, and the values passed via ... saved as lists named after their
   # deparsed variable names.
   test_args <- c(
     purrr::set_names(list(tests), arg_name),
-    purrr::map2(.dots, dots_call_names, function(x, y) purrr::set_names(list(x), y)))
+    purrr::map2(.dots, dots_call_names, function(x, y) purrr::set_names(list(x), y))
+  )
 
   p_fuzz_function(fun, .l = test_args, check_args = check_args, progress = progress)
+}
+
+#' @rdname fuzz_function
+#' @param function_call A (quoted) function call. The parameters that are 
+#' present in this call are fuzz tested separately using `tests`.
+#' @export
+#' @examples
+#' fr <- fuzz_function_call(quote(identity(x = 1)))
+#' fr_unquoted <- fuzz_function_call(quote(identity(x = 1)))
+#' stopifnot(identical(fr, fr_unquoted))
+#' knitr::kable(as.data.frame(fr))
+#'
+#' fr2 <- fuzz_function_call(quote(identical(x = TRUE, y = FALSE)))
+#' knitr::kable(as.data.frame(fr2))
+#'
+#' fr3 <- fuzz_function_call(quote(dirname(".")))
+#' knitr::kable(as.data.frame(fr3))
+#'
+#' fr4 <- fuzz_function_call(dirname(path = "."))
+#' knitr::kable(as.data.frame(fr4))
+#' @md
+fuzz_function_call <- function(function_call, tests = test_all(), check_args = TRUE, progress = interactive()) {
+  quoted_call <- if (is.language(function_call)) {
+    function_call
+  } else {
+    substitute(function_call)
+  }
+  error <- purrr::safely(eval)(quoted_call)$error
+  if (!is.null(error)) {
+    stop("`function_call` could not be evaluated without errors: ", error)
+  }
+  fun <- get(as.list(quoted_call)[[1]])
+  parameters <- as.list(quoted_call)[-1]
+  arg_names <- if (!is.null(names(parameters))) {
+    names(parameters)
+  } else {
+    names(formals(fun))
+  }
+  result <- lapply(arg_names, function(arg_name) {
+    fuzz_function(
+      fun = fun, arg_name = arg_name, parameters[
+        which(arg_names != arg_name)
+      ], tests = tests, check_args = check_args,
+      progress = progress
+    )
+  })
+  result <- do.call(c, result)
+  structure(result, class = "fuzz_results")
 }
 
 #' @rdname fuzz_function
@@ -77,13 +132,13 @@ fuzz_function <- function(fun, arg_name, ..., tests = test_all(), check_args = T
 #'
 #' # Pass tests to multiple arguments via a named list
 #' test_args <- list(
-#'    data = test_df(),
-#'    subset = test_all(),
-#'    # Specify custom tests with a new named list
-#'    formula = list(all_vars = Sepal.Length ~ ., one_var = mpg ~ .))
+#'   data = test_df(),
+#'   subset = test_all(),
+#'   # Specify custom tests with a new named list
+#'   formula = list(all_vars = Sepal.Length ~ ., one_var = mpg ~ .)
+#' )
 #' fr <- p_fuzz_function(lm, test_args)
 p_fuzz_function <- function(fun, .l, check_args = TRUE, progress = interactive()) {
-
   fuzz_asserts(fun, check_args, progress)
   if (is.null(attr(fun, "fun_name"))) {
     fun_name <- deparse(substitute(fun))
@@ -91,8 +146,9 @@ p_fuzz_function <- function(fun, .l, check_args = TRUE, progress = interactive()
     fun_name <- attr(fun, "fun_name")
   }
 
-  if (check_args)
+  if (check_args) {
     assertthat::assert_that(assertthat::has_args(fun, names(.l)))
+  }
 
   # Ensure .l is a named list of named lists
   is_named_ll(.l)
@@ -112,8 +168,9 @@ p_fuzz_function <- function(fun, .l, check_args = TRUE, progress = interactive()
   num_tests <- purrr::reduce(purrr::map_int(.l, length), `*`)
   if (num_tests >= 500000) {
     m <- utils::menu(choices = c("Yes", "No"), title = paste("The supplied tests have", num_tests, "combinations, which may be prohibitively large to calculate. Attempt to proceed?"))
-    if (m != 1)
+    if (m != 1) {
       return(NULL)
+    }
   }
 
   # Generate the list of tests to be done
@@ -121,18 +178,19 @@ p_fuzz_function <- function(fun, .l, check_args = TRUE, progress = interactive()
 
   # After crossing, restore NULL test values
   test_list <- purrr::modify_depth(test_list, 3, function(x) {
-      if (inherits(x, what = "fuzz-null")) {
-        NULL
-      } else {
-        x
-      }
-    })
+    if (inherits(x, what = "fuzz-null")) {
+      NULL
+    } else {
+      x
+    }
+  })
 
   # Create a progress bar, if called for
   if (progress) {
     pb <- progress::progress_bar$new(
       format = " running tests [:bar] :percent eta: :eta",
-      total = length(test_list), clear = FALSE, width = 60)
+      total = length(test_list), clear = FALSE, width = 60
+    )
     pb$tick(0)
   }
 
@@ -150,11 +208,14 @@ p_fuzz_function <- function(fun, .l, check_args = TRUE, progress = interactive()
       # Create a result list with both the results of try_fuzz, as well as a
       # named list pairing argument names with the test names supplied to them
       # for this particular round
-      res <- list(test_result = try_fuzz(fun = fun, fun_name = fun_name,
-                                         all_args = arglist))
+      res <- list(test_result = try_fuzz(
+        fun = fun, fun_name = fun_name,
+        all_args = arglist
+      ))
       res[["test_name"]] <- testnames
       res
-    })
+    }
+  )
 
   structure(fr, class = "fuzz_results")
 }
@@ -172,7 +233,8 @@ p_fuzz_function <- function(fun, .l, check_args = TRUE, progress = interactive()
 fuzz_asserts <- function(fun, check_args, progress) {
   assertthat::assert_that(
     is.function(fun), assertthat::is.flag(check_args),
-    assertthat::is.flag(progress))
+    assertthat::is.flag(progress)
+  )
 }
 
 # Is a list named, and is each of its elements also a named list?
@@ -202,7 +264,6 @@ assertthat::on_failure(is_named) <- function(call, env) {
 
 # Cross a list of named lists
 named_cross_n <- function(ll) {
-
   # Cross the values of the list...
   crossed_values <- purrr::cross(ll)
   # ... and then cross the names
@@ -223,7 +284,6 @@ named_cross_n <- function(ll) {
 # errors along with any values returned by the expression. Returns a list of
 # value, messages, warnings, and errors.
 try_fuzz <- function(fun, fun_name, all_args) {
-
   call <- list(fun = fun_name, args = all_args)
   messages <- NULL
   output <- NULL
@@ -253,12 +313,16 @@ try_fuzz <- function(fun, fun_name, all_args) {
   # expression is done evaluating, messages, warnings, and errors are assigned
   # to the list, which is returned as the final result of try_fuzz
 
-  output <- utils::capture.output({
-    value <- withCallingHandlers(
-      tryCatch(do.call(fun, args = all_args), error = error_handler),
-      message = message_handler,
-      warning = warning_handler
-    )}, type = "output")
+  output <- utils::capture.output(
+    {
+      value <- withCallingHandlers(
+        tryCatch(do.call(fun, args = all_args), error = error_handler),
+        message = message_handler,
+        warning = warning_handler
+      )
+    },
+    type = "output"
+  )
 
   if (length(output) == 0) {
     output <- NULL

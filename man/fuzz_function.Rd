@@ -2,11 +2,25 @@
 % Please edit documentation in R/evaluators.R
 \name{fuzz_function}
 \alias{fuzz_function}
+\alias{fuzz_function_call}
 \alias{p_fuzz_function}
 \title{Fuzz-test a function}
 \usage{
-fuzz_function(fun, arg_name, ..., tests = test_all(), check_args = TRUE,
-  progress = interactive())
+fuzz_function(
+  fun,
+  arg_name,
+  ...,
+  tests = test_all(),
+  check_args = TRUE,
+  progress = interactive()
+)
+
+fuzz_function_call(
+  function_call,
+  tests = test_all(),
+  check_args = TRUE,
+  progress = interactive()
+)
 
 p_fuzz_function(fun, .l, check_args = TRUE, progress = interactive())
 }
@@ -26,6 +40,9 @@ defaulting to \code{\link{test_all}}.}
 pass arguments to a function that accepts arguments via \code{...}.}
 
 \item{progress}{Show a progress bar while running tests?}
+
+\item{function_call}{A (quoted) function call. The parameters that are
+present in this call are fuzz tested separately using \code{tests}.}
 
 \item{.l}{A named list of tests.}
 }
@@ -54,13 +71,27 @@ fr <- fuzz_function(lm, "formula", data = iris)
 
 # When evaluating a function that takes ..., set check_args to FALSE
 fr <- fuzz_function(paste, "x", check_args = FALSE)
+fr <- fuzz_function_call(quote(identity(x = 1)))
+fr_unquoted <- fuzz_function_call(quote(identity(x = 1)))
+stopifnot(identical(fr, fr_unquoted))
+knitr::kable(as.data.frame(fr))
+
+fr2 <- fuzz_function_call(quote(identical(x = TRUE, y = FALSE)))
+knitr::kable(as.data.frame(fr2))
+
+fr3 <- fuzz_function_call(quote(dirname(".")))
+knitr::kable(as.data.frame(fr3))
+
+fr4 <- fuzz_function_call(dirname(path = "."))
+knitr::kable(as.data.frame(fr4))
 
 # Pass tests to multiple arguments via a named list
 test_args <- list(
-   data = test_df(),
-   subset = test_all(),
-   # Specify custom tests with a new named list
-   formula = list(all_vars = Sepal.Length ~ ., one_var = mpg ~ .))
+  data = test_df(),
+  subset = test_all(),
+  # Specify custom tests with a new named list
+  formula = list(all_vars = Sepal.Length ~ ., one_var = mpg ~ .)
+)
 fr <- p_fuzz_function(lm, test_args)
 }
 \seealso{

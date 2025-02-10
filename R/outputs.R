@@ -56,14 +56,13 @@ fuzz_call <- function(fr, index = NULL, ...) {
 # For each result, create a one-row data frame of test names, outputs, messages,
 # warnings, errors, and result classes.
 parse_fuzz_result_concat <- function(fr, delim) {
-
   dfr <- as.data.frame(fr[["test_name"]], stringsAsFactors = FALSE)
 
   elem_collapse <- function(elem) {
     if (is.null(elem)) {
       return(NA_character_)
     } else {
-      paste(elem, collapse = delim)
+      gsub(pattern = "\n", replacement = " ", x = paste(elem, collapse = delim))
     }
   }
 
@@ -77,7 +76,8 @@ parse_fuzz_result_concat <- function(fr, delim) {
   dfr[["result_classes"]] <- ifelse(
     is.null(fr[["test_result"]][["value"]]),
     NA_character_,
-    paste(class(fr[["test_result"]][["value"]]), collapse = delim))
+    paste(class(fr[["test_result"]][["value"]]), collapse = delim)
+  )
 
   dfr
 }
@@ -91,7 +91,6 @@ search_results <- function(fr, index, ...) {
     assertthat::assert_that(assertthat::is.count(index) && index <= length(fr))
     res <- fr[[index]]
   } else {
-
     # if no index, then check based on test name
     .dots <- list(...)
     purrr::walk(.dots, function(p) assertthat::assert_that(assertthat::is.string(p)))
@@ -101,8 +100,9 @@ search_results <- function(fr, index, ...) {
     res <- purrr::detect(fr, function(el) {
       all(purrr::map2_lgl(.dots, names(.dots), function(p, n) grepl(p, x = el[["test_name"]][[n]])))
     })
-    if (length(res) == 0)
+    if (length(res) == 0) {
       warning("Zero matches found.")
+    }
   }
   res
 }

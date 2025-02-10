@@ -4,5 +4,4 @@
 #' summarizing messages, warnings, errors, and returned values.
 #'
 #' @name fuzzr
-#' @docType package
-NULL
+"_PACKAGE"

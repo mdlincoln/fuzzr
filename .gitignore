@@ -5,3 +5,5 @@
 inst/doc
 vignettes/*.R
 vignettes/*.html
+.project
+org.eclipse.statet.r.core.prefs

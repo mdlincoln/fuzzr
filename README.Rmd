@@ -14,21 +14,13 @@ knitr::opts_chunk$set(
 
 # fuzzr
 
-[![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
-[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/fuzzr)](https://cran.r-project.org/package=fuzzr)
-[![Travis-CI Build Status](https://travis-ci.org/mdlincoln/fuzzr.svg?branch=master)](https://travis-ci.org/mdlincoln/fuzzr)
-[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/mdlincoln/fuzzr?branch=master&svg=true)](https://ci.appveyor.com/project/mdlincoln/fuzzr)
-
-
 fuzzr implements some simple ["fuzz tests"](https://en.wikipedia.org/wiki/Fuzz_testing) for your R functions, passing in a wide array of inputs and returning a report on how your function reacts.
 
 ## Installation
 
 ```{r, eval = FALSE, purl = FALSE}
-install.package("fuzzr")
-
-# Or, for the development version:
-devtools::install_github("mdlincoln/fuzzr")
+# install the development version from here 
+devtools::install_github("alan-groot/fuzzr")
 ```
 
 ## Usage
@@ -41,7 +33,6 @@ Several default suites are provided with this package, such as `test_char`, howe
 library(fuzzr)
 str(test_char())
 ```
-
 
 Evaluate a function argument by supplying `fuzz_function` its quoted name, the tests to run, along with any other required static values.
 `fuzz_function` returns a `fuzz_results` object that stores conditions raised by a function (message, warning, or error) along with any value returned by that function.

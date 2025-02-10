@@ -24,8 +24,8 @@ Access individual fuzz test results
 }
 \section{Functions}{
 \itemize{
-\item \code{fuzz_value}: Access the object returned by the fuzz test
+\item \code{fuzz_value()}: Access the object returned by the fuzz test
 
-\item \code{fuzz_call}: Access the call used for the fuzz test
+\item \code{fuzz_call()}: Access the call used for the fuzz test
+
 }}
-

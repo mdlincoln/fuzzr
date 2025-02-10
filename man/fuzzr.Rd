@@ -2,10 +2,22 @@
 % Please edit documentation in R/fuzzr-package.R
 \docType{package}
 \name{fuzzr}
-\alias{fuzzr}
 \alias{fuzzr-package}
+\alias{fuzzr}
 \title{Fuzz-Test R Functions}
 \description{
 Test function arguments with a wide array of inputs, and produce reports
 summarizing messages, warnings, errors, and returned values.
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/mdlincoln/fuzzr}
+  \item Report bugs at \url{https://github.com/mdlincoln/fuzzr/issues}
+}
+
+}
+\author{
+\strong{Maintainer}: Matthew Lincoln \email{matthew.d.lincoln@gmail.com}
+
 }

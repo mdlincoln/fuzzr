@@ -3,6 +3,7 @@
 S3method(as.data.frame,fuzz_results)
 export(fuzz_call)
 export(fuzz_function)
+export(fuzz_function_call)
 export(fuzz_value)
 export(p_fuzz_function)
 export(test_all)
