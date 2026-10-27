@@ -203,19 +203,23 @@ assertthat::on_failure(is_named) <- function(call, env) {
 # Cross a list of named lists
 named_cross_n <- function(ll) {
 
-  # Cross the values of the list...
-  crossed_values <- purrr::cross(ll)
-  # ... and then cross the names
-  crossed_names <- purrr::cross(purrr::map(ll, names))
+  # Cross the indices of each list (first varies fastest, as in purrr::cross)
+  idx <- expand.grid(
+    lapply(ll, seq_along),
+    KEEP.OUT.ATTRS = FALSE,
+    stringsAsFactors = FALSE
+  )
 
-  # Then map through both values and names in order to
-  purrr::map2(crossed_values, crossed_names, function(x, y) {
-    purrr::map2(x, y, function(m, n) {
+  lapply(seq_len(nrow(idx)), function(i) {
+    res <- lapply(seq_along(ll), function(j) {
+      k <- idx[[j]][[i]]
       list(
-        test_name = n,
-        test_value = m
+        test_name = names(ll[[j]])[[k]],
+        test_value = ll[[j]][[k]]
       )
     })
+    names(res) <- names(ll)
+    res
   })
 }
 
